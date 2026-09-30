@@ -124,6 +124,15 @@ describe("RLS por papel", () => {
     expect(n).toBe(0);
   });
 
+  it("admin lê todas as tabelas do backup manual; editor não vê perfis alheios", async () => {
+    const tabelas = ["clientes", "registros", "acompanhamentos", "notas_fiscais", "taxonomia", "configuracoes", "perfis", "pendencias_revisadas", "avisos_importacao", "historico_alteracoes"];
+    await como(db, "authenticated", admin, async (tx) => {
+      for (const t of tabelas) expect(await contar(tx, `select count(*)::int as n from ${t}`)).toBeGreaterThanOrEqual(t === "pendencias_revisadas" ? 0 : 1);
+      expect(await contar(tx, "select count(*)::int as n from perfis")).toBe(3); // admin, editor e leitor (o 4º não tem perfil)
+    });
+    expect(await como(db, "authenticated", editor, (tx) => contar(tx, "select count(*)::int as n from perfis"))).toBe(1);
+  });
+
   it("só a service_role executa a importação", async () => {
     await expect(
       como(db, "authenticated", admin, (tx) => tx.query("select importar_planilha('{}'::jsonb)")),

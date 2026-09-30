@@ -79,6 +79,31 @@ export default async function Configuracoes(props: { searchParams: Promise<{ err
           </p>
         </div>
       </section>
+
+      <section className="painel" style={{ marginTop: 16 }}>
+        <div className="painel-cabecalho">
+          <h2>Backup manual</h2>
+          <span className="nota">Todas as tabelas, inclusive o histórico de alterações</span>
+        </div>
+        <div className="painel-corpo">
+          <p className="texto-2">
+            Além do backup automático semanal (GitHub Actions, guardado por 90 dias), baixe uma cópia antes de mudanças grandes.
+            O JSON é uma cópia completa legível por programas; o Excel, para consulta. Para restaurar o banco inteiro, use o dump
+            do backup automático (veja o README).
+          </p>
+          <p className="aviso aviso-alerta">
+            O arquivo contém nomes e telefones de contatos (LGPD). Guarde em pasta restrita e não envie por e-mail.
+          </p>
+          <div className="atalhos" style={{ marginTop: 12 }}>
+            <a className="btn btn-primario" href="/configuracoes/backup?formato=json">
+              Baixar backup (JSON)
+            </a>
+            <a className="btn" href="/configuracoes/backup?formato=xlsx">
+              Baixar backup (Excel)
+            </a>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
