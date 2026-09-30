@@ -34,6 +34,9 @@
   --foco: #2f6fa8;
   --serie-principal: var(--azul-cooesa);
   --serie-secundaria: var(--aco-claro);
+  /* Séries dos gráficos (validadas: faixa de luminosidade, croma e daltonismo) */
+  --grafico-propostas: #62a4db;
+  --grafico-contratos: #1f5a9a;
   --alerta-texto: #7a5700;
   --alerta-fundo: #fdf3d6;
   --erro: #a63a3a;
@@ -91,6 +94,8 @@
     --foco: #8ab3c3;
     --serie-principal: #7ea6c9;
     --serie-secundaria: #3f5872;
+    --grafico-propostas: #2c64ab;
+    --grafico-contratos: #5698d4;
     --alerta-texto: #f0c14a;
     --alerta-fundo: #3a2f12;
     --erro: #ec8a8a;
@@ -130,6 +135,8 @@
   --foco: #8ab3c3;
   --serie-principal: #7ea6c9;
   --serie-secundaria: #3f5872;
+  --grafico-propostas: #2c64ab;
+  --grafico-contratos: #5698d4;
   --alerta-texto: #f0c14a;
   --alerta-fundo: #3a2f12;
   --erro: #ec8a8a;
@@ -1170,40 +1177,6 @@ input[type="checkbox"] {
   white-space: nowrap;
 }
 
-/* ---------- Tela de carregamento ---------- */
-
-.carregando {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  min-height: min(52vh, 440px);
-  background: #fff;
-  opacity: 0;
-  animation: carregando-surge 180ms ease-out 250ms forwards;
-}
-.carregando img {
-  display: block;
-  width: min(200px, 62vw);
-  height: auto;
-}
-@keyframes carregando-surge {
-  to {
-    opacity: 1;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .carregando {
-    animation: none;
-    opacity: 1;
-  }
-}
-
-.carregando-local {
-  padding: 40px 18px;
-  text-align: center;
-  color: var(--texto-3);
-}
-
 /* ---------- Login ---------- */
 
 .tela-login {
@@ -1331,6 +1304,158 @@ input[type="checkbox"] {
   }
 }
 
-.linha-tempo-anos{height:210px;min-width:760px;display:flex;align-items:stretch;gap:4px;border-bottom:1px solid var(--borda-forte);padding-top:12px}.coluna-ano{flex:1;min-width:16px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}.coluna-ano small{height:16px;font-size:10px;color:var(--texto-3);font-variant-numeric:tabular-nums}.barra-ano{width:min(100%,22px);min-height:1px;background:var(--serie-secundaria);position:relative;align-self:center}.barra-ano span{position:absolute;inset:auto 0 0;background:var(--serie-principal)}.lista-pendencias{list-style:none;padding:0;margin:0}.lista-pendencias article{padding:12px 16px;border-bottom:1px solid var(--borda);display:flex;align-items:center;justify-content:space-between;gap:12px}.lista-pendencias p{margin:3px 0 0;color:var(--texto-2)}
+/* ---------- Gráficos de barras e linha (components/graficos.tsx) ---------- */
 
-.lista-painel{list-style:none;margin:0;padding:0}.lista-painel li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid var(--borda)}.lista-painel li:last-child{border-bottom:0}.lista-painel li>div{min-width:0}.lista-painel li>span{white-space:nowrap;color:var(--texto-2);font-size:12.5px}.lista-painel .sub{display:block;max-width:60ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grafico-caixa {
+  position: relative;
+}
+.grafico-caixa svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+.grafico-caixa text {
+  font-family: var(--fonte-texto);
+  font-size: 11px;
+  fill: var(--texto-3);
+  font-variant-numeric: tabular-nums;
+}
+.grafico-caixa .grade-linha {
+  stroke: var(--borda);
+  stroke-width: 1;
+}
+.grafico-caixa .eixo {
+  stroke: var(--borda-forte);
+  stroke-width: 1;
+}
+.grafico-caixa .rotulo-valor {
+  fill: var(--texto-2);
+  font-weight: 500;
+}
+.grafico-caixa .alvo {
+  fill: transparent;
+  cursor: default;
+}
+.grafico-caixa .alvo:hover,
+.grafico-caixa .alvo.ativo {
+  fill: var(--superficie-3);
+  opacity: 0.6;
+}
+.serie-propostas {
+  fill: var(--grafico-propostas);
+}
+.serie-contratos {
+  fill: var(--grafico-contratos);
+}
+.linha-serie {
+  fill: none;
+  stroke: var(--grafico-contratos);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.ponto-serie {
+  fill: var(--grafico-contratos);
+  stroke: var(--superficie);
+  stroke-width: 2;
+}
+.legenda i.serie-propostas {
+  background: var(--grafico-propostas);
+}
+.legenda i.serie-contratos {
+  background: var(--grafico-contratos);
+}
+.tabela-dados summary {
+  cursor: pointer;
+  color: var(--link);
+  font-size: 12.5px;
+  padding: 8px 0 0;
+}
+
+/* ---------- Painel ---------- */
+
+.lista-painel {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.lista-painel li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--borda);
+}
+.lista-painel li:last-child {
+  border-bottom: 0;
+}
+.lista-painel li > div {
+  min-width: 0;
+}
+.lista-painel li > span {
+  white-space: nowrap;
+  color: var(--texto-2);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.lista-painel .sub {
+  display: block;
+  color: var(--texto-2);
+  font-size: 12.5px;
+  max-width: 60ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Pendências ---------- */
+
+.lista-pendencias {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.lista-pendencias li {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--borda);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.lista-pendencias li:last-child {
+  border-bottom: 0;
+}
+.lista-pendencias p {
+  margin: 3px 0 0;
+  color: var(--texto-2);
+}
+@media (max-width: 600px) {
+  .lista-pendencias li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ---------- Cabeçalho impresso (currículo em PDF) ---------- */
+
+.cabecalho-impressao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 2px solid #3e5b7b;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+.cabecalho-impressao svg {
+  width: 150px;
+  height: auto;
+}
+.cabecalho-impressao p {
+  margin: 0;
+  font-size: 9pt;
+  color: #333;
+  text-align: right;
+}

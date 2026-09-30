@@ -4,39 +4,77 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { podeEditar } from "@/lib/papeis";
+import { errosPorCampo } from "@/lib/registros/esquema";
 import { criarClienteServidor, obterSessao } from "@/lib/supabase/server";
 import { lerValorBR } from "@/lib/valores";
 
-const dataOpcional = z.string().trim().refine((v) => v === "" || /^\d{4}-\d{2}-\d{2}$/.test(v), "Data inválida.").transform((v) => v || null);
-const formularioNota = z.object({
-  id: z.string().optional(),
-  numero: z.string().trim().max(80),
-  data_emissao: dataOpcional,
-  data_credito: dataOpcional,
-  cliente_id: z.string().transform((v) => v ? Number(v) : null).refine((v) => v === null || (Number.isSafeInteger(v) && v > 0), "Cliente inválido."),
-  empresa_texto: z.string().trim().max(240),
-  titulo: z.string().trim().max(500),
-  valor: z.string().transform((v, ctx) => {
-    const n = lerValorBR(v);
-    if (n === null || Number.isNaN(n) || n <= 0) { ctx.addIssue({ code: "custom", message: "Informe um valor maior que zero." }); return z.NEVER; }
-    return n;
-  }),
-  ano: z.string().transform((v, ctx) => {
-    const n = Number(v);
-    if (!Number.isInteger(n) || n < 1990 || n > 2100) { ctx.addIssue({ code: "custom", message: "Informe um ano válido." }); return z.NEVER; }
-    return n;
-  }),
-  registro_num: z.string().transform((v) => v ? Number(v) : null).refine((v) => v === null || (Number.isSafeInteger(v) && v > 0), "Registro vinculado inválido."),
-});
+export type EstadoNota = { erro?: string; campos?: Record<string, string> };
 
-export async function salvarNota(form: FormData) {
+const dataOpcional = z
+  .string()
+  .trim()
+  .refine((v) => v === "" || /^\d{4}-\d{2}-\d{2}$/.test(v), "Data inválida.")
+  .transform((v) => v || null);
+
+const idOpcional = (mensagem: string) =>
+  z
+    .string()
+    .trim()
+    .transform((v) => (v ? Number(v) : null))
+    .refine((v) => v === null || (Number.isSafeInteger(v) && v > 0), mensagem);
+
+const esquemaNota = z
+  .object({
+    numero: z.string().trim().max(80, "Número muito longo."),
+    data_emissao: dataOpcional,
+    data_credito: dataOpcional,
+    cliente_id: idOpcional("Cliente inválido."),
+    empresa_texto: z.string().trim().max(240, "Texto muito longo."),
+    titulo: z.string().trim().max(500, "Título muito longo."),
+    valor: z.string().transform((v, ctx) => {
+      const n = lerValorBR(v);
+      if (n === null || Number.isNaN(n) || n <= 0) {
+        ctx.addIssue({ code: "custom", message: "Informe um valor maior que zero, no formato 1.234,56." });
+        return z.NEVER;
+      }
+      return n;
+    }),
+    ano: z.string().transform((v, ctx) => {
+      const n = Number(v);
+      if (!Number.isInteger(n) || n < 1990 || n > 2100) {
+        ctx.addIssue({ code: "custom", message: "Informe um ano válido." });
+        return z.NEVER;
+      }
+      return n;
+    }),
+    registro_num: idOpcional("Número de registro inválido."),
+  })
+  .refine((d) => !d.data_emissao || !d.data_credito || d.data_credito >= d.data_emissao, {
+    message: "O crédito não pode ser antes da emissão.",
+    path: ["data_credito"],
+  });
+
+const CAMPOS = ["numero", "data_emissao", "data_credito", "cliente_id", "empresa_texto", "titulo", "valor", "ano", "registro_num"];
+
+export async function salvarNota(_: EstadoNota, form: FormData): Promise<EstadoNota> {
   const sessao = await obterSessao();
-  if (!sessao || !podeEditar(sessao.papel)) redirect("/faturamento?erro=permissao");
-  const parsed = formularioNota.safeParse(Object.fromEntries(form));
-  if (!parsed.success) redirect("/faturamento?erro=campos");
-  const d = parsed.data;
-  const id = d.id ? Number(d.id) : null;
-  if (id !== null && (!Number.isSafeInteger(id) || id < 1)) redirect("/faturamento?erro=id");
+  if (!sessao || !podeEditar(sessao.papel)) return { erro: "Seu papel não permite criar ou editar notas fiscais." };
+
+  const entrada = Object.fromEntries(CAMPOS.map((c) => [c, String(form.get(c) ?? "")]));
+  const r = esquemaNota.safeParse(entrada);
+  if (!r.success) return { erro: "Corrija os campos destacados.", campos: errosPorCampo(r.error) };
+  const d = r.data;
+
+  const idTexto = String(form.get("id") ?? "");
+  const id = idTexto ? Number(idTexto) : null;
+  if (id !== null && (!Number.isSafeInteger(id) || id < 1)) return { erro: "Nota inválida." };
+
+  const db = await criarClienteServidor();
+  if (d.registro_num) {
+    const { data: reg } = await db.from("registros").select("num").eq("num", d.registro_num).maybeSingle();
+    if (!reg) return { erro: "Corrija os campos destacados.", campos: { registro_num: `O registro Nº ${d.registro_num} não existe.` } };
+  }
+
   const linha = {
     numero: d.numero || null,
     data_emissao: d.data_emissao,
@@ -48,12 +86,12 @@ export async function salvarNota(form: FormData) {
     ano: d.ano,
     registro_num: d.registro_num,
   };
-  const db = await criarClienteServidor();
-  const result = id === null
-    ? await db.from("notas_fiscais").insert(linha).select("id").single()
-    : await db.from("notas_fiscais").update(linha).eq("id", id).select("id").maybeSingle();
-  if (result.error || !result.data) redirect("/faturamento?erro=salvar");
-  revalidatePath("/faturamento");
-  if (d.registro_num) revalidatePath(`/registros/${d.registro_num}`);
+  const resultado =
+    id === null
+      ? await db.from("notas_fiscais").insert(linha).select("id").single()
+      : await db.from("notas_fiscais").update(linha).eq("id", id).select("id").maybeSingle();
+  if (resultado.error || !resultado.data) return { erro: "O banco recusou a gravação. Confira os campos e se o seu papel permite editar." };
+
+  revalidatePath("/", "layout");
   redirect(`/faturamento?ano=${d.ano}&salvo=1`);
 }

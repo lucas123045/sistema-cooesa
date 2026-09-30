@@ -14,9 +14,26 @@ export default async function EditarNota(props: { params: Promise<{ id: string }
   if (!Number.isSafeInteger(id) || id < 1) notFound();
   const db = await criarClienteServidor();
   const [{ data: nota }, clientes] = await Promise.all([
-    db.from("vw_notas").select("id,numero,data_emissao,data_credito,cliente_id,empresa_texto,titulo,valor,ano,registro_num").eq("id", id).maybeSingle(),
+    db
+      .from("vw_notas")
+      .select(
+        "id,numero,data_emissao,data_credito,cliente_id,empresa_texto,titulo,valor,ano,registro_num,origem_aba,origem_linha",
+      )
+      .eq("id", id)
+      .maybeSingle(),
     nomesClientes(db),
   ]);
   if (!nota) notFound();
-  return <><CabecalhoPagina sobre={<Link href="/faturamento">Faturamento</Link>} titulo={`Editar nota ${nota.numero ?? id}`} descricao="A alteração será registrada no histórico de auditoria." /><section className="painel"><FormNota nota={nota} clientes={clientes} /></section></>;
+  return (
+    <>
+      <CabecalhoPagina
+        sobre={<Link href="/faturamento">Faturamento</Link>}
+        titulo={`Editar nota ${nota.numero ?? id}`}
+        descricao="A alteração será registrada no histórico de auditoria."
+      />
+      <section className="painel">
+        <FormNota nota={nota} clientes={clientes} />
+      </section>
+    </>
+  );
 }

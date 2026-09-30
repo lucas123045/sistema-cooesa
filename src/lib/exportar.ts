@@ -1,6 +1,8 @@
 import "server-only";
 import ExcelJS from "exceljs";
 
+export { lerTudo } from "@/lib/consultas";
+
 export type Coluna<T> = {
   titulo: string;
   valor: (linha: T) => string | number | null | undefined;
@@ -76,22 +78,6 @@ export async function gerarXLSX(planilhas: Planilha<any>[]): Promise<Buffer> {
   }
   const buf = await wb.xlsx.writeBuffer();
   return Buffer.from(buf as ArrayBuffer);
-}
-
-/** Lê todas as linhas de uma consulta paginando de 1.000 em 1.000 (limite da API do Supabase). */
-export async function lerTudo<T>(
-  pagina: (de: number, ate: number) => PromiseLike<{ data: unknown[] | null; error: { message: string } | null }>,
-): Promise<T[]> {
-  const tamanho = 1000;
-  const todas: T[] = [];
-  for (let de = 0; ; de += tamanho) {
-    const { data, error } = await pagina(de, de + tamanho - 1);
-    if (error) throw new Error(error.message);
-    const lote = (data ?? []) as T[];
-    todas.push(...lote);
-    if (lote.length < tamanho) break;
-  }
-  return todas;
 }
 
 export function respostaArquivo(conteudo: string | Buffer, nome: string, tipo: "csv" | "xlsx" | "json"): Response {

@@ -89,6 +89,7 @@ export default async function PaginaRegistro(props: PageProps<"/registros/[num]"
 
       <div className="pilha">
         {q.salvo ? <p className="aviso aviso-sucesso">Registro salvo. A alteração está no histórico abaixo.</p> : null}
+        {q.vinculado ? <p className="aviso aviso-sucesso">Acompanhamento antigo vinculado a este registro.</p> : null}
         {q.erro === "excluir" ? <p className="aviso aviso-erro">O registro não foi excluído. Só administradores podem excluir.</p> : null}
 
         {pendencias.length ? (

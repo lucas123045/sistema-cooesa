@@ -1,6 +1,6 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { lerTudo } from "@/lib/exportar";
+import { lerTudo } from "@/lib/consultas";
 
 export type Sugestoes = Record<"setor" | "area" | "empreendimento" | "servico" | "especialidade" | "gerente", string[]>;
 

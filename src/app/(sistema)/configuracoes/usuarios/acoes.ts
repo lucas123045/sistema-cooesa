@@ -8,7 +8,9 @@ import { criarClienteServidor, obterSessao } from "@/lib/supabase/server";
 
 export async function alterarPapel(form: FormData) {
   const sessao = await obterSessao();
-  const dados = z.object({ user_id: z.string().uuid(), papel: z.enum(["admin", "editor", "leitura"]) }).safeParse({ user_id: form.get("user_id"), papel: form.get("papel") });
+  const dados = z
+    .object({ user_id: z.string().uuid(), papel: z.enum(["admin", "editor", "leitura"]) })
+    .safeParse({ user_id: form.get("user_id"), papel: form.get("papel") });
   if (!sessao || !eAdmin(sessao.papel) || !dados.success) redirect("/configuracoes/usuarios?erro=permissao");
   const db = await criarClienteServidor();
   const { data: alvo, error: erroAlvo } = await db.from("perfis").select("papel").eq("user_id", dados.data.user_id).maybeSingle();

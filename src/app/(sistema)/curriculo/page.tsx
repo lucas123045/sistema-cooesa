@@ -2,26 +2,189 @@ import type { Metadata } from "next";
 import Form from "next/form";
 import Link from "next/link";
 import { CabecalhoPagina } from "@/components/CabecalhoPagina";
-import { formatarValorRegistro } from "@/lib/formato";
+import { Logo } from "@/components/marca/Logo";
+import { SeloSituacao } from "@/components/SeloSituacao";
+import { lerTudo } from "@/lib/consultas";
+import { formatarData, formatarValorRegistro } from "@/lib/formato";
 import { criarClienteServidor, exigirSessao } from "@/lib/supabase/server";
-import { BotaoImprimir } from "./BotaoImprimir";
 import type { LinhaCurriculo } from "@/lib/tipos";
+import { BotaoImprimir, SelectEncadeado } from "./BotaoImprimir";
 
-export const metadata: Metadata = { title: "Currículo técnico" };
-type Search = Record<string, string | string[] | undefined>;
-function valor(p: Search, chave: string) { const x = p[chave]; return (Array.isArray(x) ? x[0] : x)?.trim() ?? ""; }
+export const metadata: Metadata = { title: "Currículo" };
 
-export default async function Curriculo(props: { searchParams: Promise<Search> }) {
+const NIVEIS = [
+  ["setor", "A — Setor"],
+  ["area", "B — Área"],
+  ["empreendimento", "C — Empreendimento"],
+  ["servico", "D — Serviço"],
+  ["especialidade", "E — Especialidade"],
+] as const;
+type Nivel = (typeof NIVEIS)[number][0];
+
+function texto(v: string | string[] | undefined) {
+  return (Array.isArray(v) ? v[0] : v)?.trim().slice(0, 120) ?? "";
+}
+
+export default async function PaginaCurriculo(props: PageProps<"/curriculo">) {
   await exigirSessao();
   const p = await props.searchParams;
-  const f = { setor: valor(p,"setor"), area: valor(p,"area"), empreendimento: valor(p,"empreendimento"), servico: valor(p,"servico"), especialidade: valor(p,"especialidade"), de: valor(p,"de"), ate: valor(p,"ate"), andamento: valor(p,"andamento")==="1", valores: valor(p,"valores")==="1" };
+  const selecao = Object.fromEntries(NIVEIS.map(([n]) => [n, texto(p[n])])) as Record<Nivel, string>;
+  const de = Number(texto(p.de)) || null;
+  const ate = Number(texto(p.ate)) || null;
+  const andamento = texto(p.andamento) === "1";
+  const valores = texto(p.valores) === "1";
+
   const db = await criarClienteServidor();
-  const { data, error } = await db.from("vw_curriculo").select("*").order("ano",{ascending:false}).order("num",{ascending:false});
-  const todos = (data ?? []) as LinhaCurriculo[];
-  const linhas = todos.filter(x => (f.andamento || x.situacao==="Contrato encerrado") && (!f.setor||x.setor===f.setor) && (!f.area||x.area===f.area) && (!f.empreendimento||x.empreendimento===f.empreendimento) && (!f.servico||x.servico===f.servico) && (!f.especialidade||x.especialidade===f.especialidade) && (!f.de||x.ano>=Number(f.de)) && (!f.ate||x.ano<=Number(f.ate)));
-  const opcoes = (campo:keyof LinhaCurriculo, pai?:keyof LinhaCurriculo, selecionado?:string) => [...new Set(todos.filter(x=>!pai||!selecionado||x[pai]===selecionado).map(x=>x[campo]).filter((v):v is string=>typeof v==="string"&&!!v))].sort();
-  type CampoFiltro=[string,string,keyof LinhaCurriculo,(keyof LinhaCurriculo)?,string?];
-  const campos:CampoFiltro[]=[["setor","Setor","setor"],["area","Área","area","setor",f.setor],["empreendimento","Empreendimento","empreendimento","area",f.area],["servico","Serviço","servico","empreendimento",f.empreendimento],["especialidade","Especialidade","especialidade","servico",f.servico]];
-  const qs=new URLSearchParams(); for(const [k,v] of Object.entries(f)) if(v) qs.set(k,typeof v==="boolean"?"1":String(v));
-  return <><CabecalhoPagina sobre="Experiência comprovada" titulo="Currículo técnico" descricao="Contratos encerrados por padrão; inclua os em andamento quando precisar." acoes={<><a className="btn" href={"/curriculo/exportar?"+qs.toString()}>Exportar Excel</a><BotaoImprimir/></>}/><section className="painel"><Form action="/curriculo" className="filtros">{campos.map(([n,label,key,pai,sel])=><div className="campo" key={n}><label htmlFor={n}>{label}</label><select id={n} name={n} defaultValue={f[n as keyof typeof f] as string}><option value="">Todos</option>{opcoes(key,pai,sel).map(v=><option key={v}>{v}</option>)}</select></div>)}<div className="campo"><label htmlFor="de">Ano de</label><input id="de" name="de" type="number" min="1990" max="2100" defaultValue={f.de}/></div><div className="campo"><label htmlFor="ate">Ano até</label><input id="ate" name="ate" type="number" min="1990" max="2100" defaultValue={f.ate}/></div><label className="checagem"><input type="checkbox" name="andamento" value="1" defaultChecked={f.andamento}/> Incluir contratos em andamento</label><label className="checagem"><input type="checkbox" name="valores" value="1" defaultChecked={f.valores}/> Exibir valores</label><button className="btn btn-primario" type="submit">Filtrar</button></Form><div className="painel-cabecalho"><strong>{linhas.length} experiências</strong></div>{error?<p className="aviso aviso-erro">Não foi possível carregar os contratos. Confira as migrações.</p>:<div className="tabela-rolagem"><table className="tabela"><thead><tr><th>Ano</th><th>Cliente e escopo</th><th>Classificação</th><th>Situação</th>{f.valores?<th className="num">Valor</th>:null}</tr></thead><tbody>{linhas.map(x=><tr key={x.num}><td>{x.ano}</td><td><Link href={"/registros/"+x.num}><strong>{x.cliente}</strong></Link><span className="sub">{x.escopo}</span></td><td>{[x.setor,x.area,x.empreendimento,x.servico,x.especialidade].filter(Boolean).join(" / ")||"—"}</td><td>{x.situacao}</td>{f.valores?<td className="num">{x.valor===null?"—":formatarValorRegistro(Number(x.valor),x.tipo)}</td>:null}</tr>)}</tbody></table></div>}</section></>;
+  let todos: LinhaCurriculo[] = [];
+  let falhou = false;
+  try {
+    todos = await lerTudo<LinhaCurriculo>((a, b) =>
+      db.from("vw_curriculo").select("*").order("ano", { ascending: false }).order("num", { ascending: false }).range(a, b),
+    );
+  } catch {
+    falhou = true;
+  }
+
+  const base = todos.filter((x) => (andamento || x.situacao === "Contrato encerrado") && (!de || x.ano >= de) && (!ate || x.ano <= ate));
+  // Cada nível só oferece opções compatíveis com os níveis acima já escolhidos.
+  const opcoes = (indice: number) => {
+    const acima = NIVEIS.slice(0, indice).map(([n]) => n);
+    const campo = NIVEIS[indice][0];
+    const compativeis = base.filter((x) => acima.every((n) => !selecao[n] || x[n] === selecao[n]));
+    return [...new Set(compativeis.map((x) => x[campo]).filter((v): v is string => Boolean(v)))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  };
+  const linhas = base.filter((x) => NIVEIS.every(([n]) => !selecao[n] || x[n] === selecao[n]));
+
+  const qs = new URLSearchParams();
+  for (const [n] of NIVEIS) if (selecao[n]) qs.set(n, selecao[n]);
+  if (de) qs.set("de", String(de));
+  if (ate) qs.set("ate", String(ate));
+  if (andamento) qs.set("andamento", "1");
+  if (valores) qs.set("valores", "1");
+  const filtrosTexto = [
+    ...NIVEIS.filter(([n]) => selecao[n]).map(([n]) => selecao[n]),
+    de || ate ? `${de ?? "início"}–${ate ?? "hoje"}` : null,
+    andamento ? "inclui contratos em andamento" : "contratos encerrados",
+  ].filter(Boolean);
+
+  return (
+    <>
+      <CabecalhoPagina
+        sobre="Acervo técnico"
+        titulo="Currículo"
+        descricao="Contratos que comprovam experiência, para montar o currículo de licitações. Por padrão, só os encerrados."
+        acoes={
+          <>
+            <a className="btn" href={`/curriculo/exportar?${qs.toString()}`}>
+              Exportar Excel
+            </a>
+            <BotaoImprimir />
+          </>
+        }
+      />
+
+      <div className="so-impressao cabecalho-impressao">
+        <Logo variante="azul" />
+        <p>
+          <strong>Cooesa Engenharia S/S Ltda.</strong> · Currículo técnico
+          <br />
+          Rua Bela Cintra, 299 · São Paulo · {filtrosTexto.join(" · ")}
+        </p>
+      </div>
+
+      <section className="painel">
+        <Form action="/curriculo" className="filtros">
+          {NIVEIS.map(([n, rotulo], i) => (
+            <div className="campo" key={n}>
+              <label htmlFor={n}>{rotulo}</label>
+              <SelectEncadeado id={n} name={n} defaultValue={selecao[n]}>
+                <option value="">Todos</option>
+                {opcoes(i).map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </SelectEncadeado>
+            </div>
+          ))}
+          <div className="campo">
+            <label htmlFor="de">Ano de</label>
+            <input id="de" name="de" type="number" min={1990} max={2100} defaultValue={de ?? ""} />
+          </div>
+          <div className="campo">
+            <label htmlFor="ate">Ano até</label>
+            <input id="ate" name="ate" type="number" min={1990} max={2100} defaultValue={ate ?? ""} />
+          </div>
+          <label className="checagem">
+            <input type="checkbox" name="andamento" value="1" defaultChecked={andamento} /> Incluir contratos em andamento
+          </label>
+          <label className="checagem">
+            <input type="checkbox" name="valores" value="1" defaultChecked={valores} /> Mostrar valores
+          </label>
+          <div className="atalhos">
+            <button className="btn btn-primario" type="submit">
+              Filtrar
+            </button>
+            {qs.toString() ? (
+              <Link className="btn btn-texto" href="/curriculo">
+                Limpar
+              </Link>
+            ) : null}
+          </div>
+        </Form>
+
+        <div className="barra-resultado">
+          <span>
+            <strong>{linhas.length}</strong> contrato(s) · {filtrosTexto.join(" · ")}
+          </span>
+        </div>
+
+        {falhou ? (
+          <p className="aviso aviso-erro" style={{ margin: 18 }}>
+            Não foi possível carregar os contratos. Recarregue a página.
+          </p>
+        ) : linhas.length === 0 ? (
+          <div className="vazio">
+            <strong>Nenhum contrato com esses filtros.</strong>
+            Tire um dos níveis da classificação ou amplie o intervalo de anos.
+          </div>
+        ) : (
+          <div className="tabela-rolagem">
+            <table className="tabela">
+              <thead>
+                <tr>
+                  <th>Ano</th>
+                  <th>Cliente e escopo</th>
+                  <th>Classificação</th>
+                  <th>Período</th>
+                  <th className="nao-imprimir">Situação</th>
+                  {valores ? <th className="num">Valor</th> : null}
+                </tr>
+              </thead>
+              <tbody>
+                {linhas.map((x) => (
+                  <tr key={x.num}>
+                    <td className="tabular">{x.ano}</td>
+                    <td className="celula-escopo">
+                      <Link href={`/registros/${x.num}`} style={{ color: "var(--texto)", fontWeight: 500 }}>
+                        {x.cliente}
+                      </Link>
+                      <span className="sub">{x.escopo ?? "—"}</span>
+                    </td>
+                    <td className="pequeno texto-2">{[x.setor, x.area, x.empreendimento, x.servico, x.especialidade].filter(Boolean).join(" › ") || "—"}</td>
+                    <td className="tabular pequeno">
+                      {x.data_ini ? formatarData(x.data_ini) : "—"}
+                      {x.data_enc ? ` a ${formatarData(x.data_enc)}` : ""}
+                    </td>
+                    <td className="nao-imprimir">
+                      <SeloSituacao situacao={x.situacao} />
+                    </td>
+                    {valores ? <td className="num">{x.valor === null ? "—" : formatarValorRegistro(Number(x.valor), x.tipo)}</td> : null}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    </>
+  );
 }

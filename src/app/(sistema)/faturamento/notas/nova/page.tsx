@@ -10,5 +10,16 @@ export default async function NovaNota() {
   await exigirSessao("editor");
   const db = await criarClienteServidor();
   const clientes = await nomesClientes(db);
-  return <><CabecalhoPagina sobre={<Link href="/faturamento">Faturamento</Link>} titulo="Nova nota fiscal" descricao="Registre a nota e, quando possível, relacione-a a um cliente e a uma proposta." /><section className="painel"><FormNota clientes={clientes} /></section></>;
+  return (
+    <>
+      <CabecalhoPagina
+        sobre={<Link href="/faturamento">Faturamento</Link>}
+        titulo="Nova nota fiscal"
+        descricao="Registre a nota e, quando possível, relacione-a a um cliente e a uma proposta."
+      />
+      <section className="painel">
+        <FormNota clientes={clientes} />
+      </section>
+    </>
+  );
 }
