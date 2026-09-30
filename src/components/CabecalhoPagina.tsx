@@ -1,5 +1,5 @@
 type Props = {
-  sobre?: string;
+  sobre?: React.ReactNode;
   titulo: React.ReactNode;
   descricao?: React.ReactNode;
   acoes?: React.ReactNode;

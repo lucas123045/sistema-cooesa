@@ -1,0 +1,4 @@
+﻿"use server";
+import {revalidatePath} from "next/cache";import {redirect} from "next/navigation";import {z} from "zod";import {podeEditar} from "@/lib/papeis";import {criarClienteServidor,obterSessao} from "@/lib/supabase/server";
+export async function marcarRevisada(form:FormData){const s=await obterSessao();const x=z.object({tipo:z.string().min(1).max(80),chave:z.string().min(1).max(200)}).safeParse({tipo:form.get("tipo"),chave:form.get("chave")});if(!s||!podeEditar(s.papel)||!x.success)redirect("/pendencias?erro=permissao");const db=await criarClienteServidor();const {error}=await db.from("pendencias_revisadas").upsert({tipo:x.data.tipo,chave:x.data.chave,revisado_por:s.userId},{onConflict:"tipo,chave"});if(error)redirect("/pendencias?erro=salvar");revalidatePath("/pendencias");revalidatePath("/","layout");}
+

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, Jost } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 /** Títulos e números grandes: sans geométrica de letras redondas, ecoando o logo. */
@@ -35,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${jost.variable} ${plex.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: scriptTema }} />
+        <Script id="cooesa-tema-inicial" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: scriptTema }} />
       </head>
       <body>{children}</body>
     </html>
