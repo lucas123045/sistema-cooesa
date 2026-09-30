@@ -1173,45 +1173,28 @@ input[type="checkbox"] {
 /* ---------- Tela de carregamento ---------- */
 
 .carregando {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
   display: grid;
   place-items: center;
-  background: var(--azul-profundo);
+  width: 100%;
+  min-height: min(52vh, 440px);
+  background: #fff;
   opacity: 0;
   animation: carregando-surge 180ms ease-out 250ms forwards;
 }
-.carregando svg {
-  width: min(280px, 60vw);
+.carregando img {
+  display: block;
+  width: min(200px, 62vw);
   height: auto;
-}
-.carregando .enchimento {
-  animation: carregando-enche 1.6s cubic-bezier(0.45, 0, 0.25, 1) infinite;
-  transform-box: fill-box;
 }
 @keyframes carregando-surge {
   to {
     opacity: 1;
   }
 }
-@keyframes carregando-enche {
-  0% {
-    transform: translateY(100%);
-  }
-  70%,
-  100% {
-    transform: translateY(0);
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   .carregando {
     animation: none;
     opacity: 1;
-  }
-  .carregando .enchimento {
-    animation: none;
-    transform: none;
   }
 }
 
