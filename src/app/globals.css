@@ -1459,3 +1459,82 @@ input[type="checkbox"] {
   color: #333;
   text-align: right;
 }
+
+/* ---------- Resultados ---------- */
+.resultado-resumo { margin: 0; }
+.resultado-resumo > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--borda);
+}
+.resultado-resumo > div:last-child { border-bottom: 0; }
+.resultado-resumo dt { color: var(--texto-2); }
+.resultado-resumo dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: right;
+}
+.resultado-ia {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--aco-medio);
+  background: var(--superficie-2);
+  white-space: pre-wrap;
+}
+.resultado-ia p:last-child { margin-bottom: 0; }
+@media (max-width: 520px) {
+  .resultado-resumo > div { align-items: flex-start; flex-direction: column; gap: 2px; }
+  .resultado-resumo dd { text-align: left; }
+}
+
+.variacao {
+  font-variant-numeric: tabular-nums;
+  color: var(--texto-2);
+  white-space: nowrap;
+}
+.celula-taxa {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+}
+.mini-barra {
+  flex: 1;
+  height: 8px;
+  min-width: 60px;
+  background: var(--superficie-3);
+  border-radius: 2px;
+  overflow: hidden;
+  display: block;
+}
+.mini-barra > span {
+  display: block;
+  height: 100%;
+  background: var(--grafico-contratos);
+}
+.indicadores-embutidos {
+  border: none;
+  border-bottom: 1px solid var(--borda);
+  border-radius: 0;
+  box-shadow: none;
+}
+.ajuda-linha {
+  display: block;
+  font-size: 12px;
+  color: var(--texto-3);
+  margin-top: 2px;
+}
+/* Carteira por situação: mesmas cores fixas dos selos de situação */
+.barras-situacao .preenchido.sit-contrato { background: var(--sit-contrato); }
+.barras-situacao .preenchido.sit-aguardando { background: var(--alerta); }
+.barras-situacao .preenchido.sit-perdida { background: var(--sit-perdida); }
+.barras-situacao .preenchido.sit-cancelada { background: var(--sit-cancelada); }
+.barras-situacao .preenchido.sit-litigio { background: var(--sit-litigio); }
+.barras-situacao .preenchido.sit-sem { background: var(--borda-forte); }
+.barras-situacao li {
+  grid-template-columns: minmax(0, 170px) minmax(0, 1fr) 110px;
+}

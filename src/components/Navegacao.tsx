@@ -19,6 +19,7 @@ type Props = {
 function itens(pendencias: number | null): Item[] {
   return [
     { href: "/", rotulo: "Painel" },
+    { href: "/resultados", rotulo: "Resultados" },
     { href: "/registros", rotulo: "Propostas e contratos" },
     { href: "/curriculo", rotulo: "Currículo" },
     { href: "/faturamento", rotulo: "Faturamento" },

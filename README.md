@@ -61,8 +61,7 @@ Documentadas em [`.env.example`](.env.example). **Nunca commite valores reais** 
 | `SUPABASE_SERVICE_ROLE_KEY` | só servidor e scripts | ignora o RLS — nunca com prefixo `NEXT_PUBLIC_` |
 | `CRON_SECRET` | `/api/keep-alive` | a Vercel envia como `Authorization: Bearer …` |
 | `SUPABASE_DB_URL` | só GitHub Actions (backup) | secret do repositório, não da Vercel |
-| `OPENAI_API_KEY` | só servidor | opcional; habilita análise por IA em Resultados. Envia apenas métricas agregadas, sem dados de clientes. |
-| `OPENAI_MODEL` | só servidor | opcional; modelo disponível na conta OpenAI (padrão `gpt-6-astra`). |
+| `OPENAI_API_KEY`, `OPENAI_MODEL` | só servidor (opcional) | análise por IA em Resultados; sem as duas, a seção some |
 
 ## 3. Supabase: projeto, migrações e autenticação
 
