@@ -2,6 +2,7 @@
  * Carga inicial do banco a partir de data/cooesa_dados.json.
  *
  *   npm run seed        (usa .env.local: NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY)
+ *   npm run conferir    (só confere os números, sem importar nada — seguro para rodar a qualquer momento)
  *
  * - Toda a carga roda numa única transação no banco (função importar_planilha).
  * - Idempotente: rodar de novo não duplica nem sobrescreve nada.
@@ -21,24 +22,38 @@ async function main() {
   }
   const supabase = createClient(url, chave, { auth: { persistSession: false } });
 
-  const caminho = join(__dirname, "..", "data", "cooesa_dados.json");
-  const dados = JSON.parse(readFileSync(caminho, "utf8"));
-  console.log(`Lido ${caminho}: ${dados.registros.length} registros, ${dados.notas.length} notas.`);
+  // Carga nova = esta execução inseriu registros. Se o banco já estava carregado, diferenças
+  // em relação à planilha podem ser correções legítimas feitas depois (ex.: clientes unificados).
+  let cargaNova = false;
+  if (!process.argv.includes("--so-conferir")) {
+    const caminho = join(__dirname, "..", "data", "cooesa_dados.json");
+    const dados = JSON.parse(readFileSync(caminho, "utf8"));
+    console.log(`Lido ${caminho}: ${dados.registros.length} registros, ${dados.notas.length} notas.`);
 
-  const { data: inseridos, error } = await supabase.rpc("importar_planilha", { dados });
-  if (error) {
-    console.error("A importação falhou (nada foi gravado — a transação foi desfeita):", error.message);
-    process.exit(1);
+    const { data: inseridos, error } = await supabase.rpc("importar_planilha", { dados });
+    if (error) {
+      console.error("A importação falhou (nada foi gravado — a transação foi desfeita):", error.message);
+      process.exit(1);
+    }
+    console.log("Inseridos nesta execução (0 = já existiam):", inseridos);
+    cargaNova = Number((inseridos as { registros?: number } | null)?.registros ?? 0) > 0;
   }
-  console.log("Inseridos nesta execução (0 = já existiam):", inseridos);
 
   const conferencia = await lerConferencia(supabase);
   const itens = conferirCarga(conferencia);
   console.log("\n" + formatarConferencia(itens) + "\n");
   const divergentes = itens.filter((i) => !i.ok);
-  if (divergentes.length) {
+  if (divergentes.length && cargaNova) {
     console.error(`${divergentes.length} número(s) DIVERGENTE(S). A carga não está correta.`);
     process.exit(1);
+  }
+  if (divergentes.length) {
+    console.warn(
+      `${divergentes.length} número(s) diferente(s) da planilha original. Como o banco já estava carregado, isso é esperado ` +
+        "depois de correções feitas no sistema (clientes unificados, acompanhamentos vinculados etc.). " +
+        "Confira as mudanças em historico_alteracoes e em docs/correcoes-*.md.",
+    );
+    return;
   }
   console.log("Todos os números da seção 4.6 conferem.");
 }

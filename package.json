@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed": "tsx --env-file=.env.local scripts/seed.ts",
-    "criar-admin": "tsx --env-file=.env.local scripts/criar-admin.ts"
+    "criar-admin": "tsx --env-file=.env.local scripts/criar-admin.ts",
+    "conferir": "tsx --env-file=.env.local scripts/seed.ts --so-conferir"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
