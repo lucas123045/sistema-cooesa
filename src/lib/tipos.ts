@@ -140,10 +140,36 @@ export type LinhaCliente = {
   pct_sucesso: Num | null;
   valor_contratado_p: Num;
   valor_contratado_t: Num;
+  valor_proposto_p: Num;
   faturado: Num;
   notas: number;
   primeiro_ano: number | null;
   ultimo_ano: number | null;
+  status: string | null;
+  status_sugerido: string | null;
+  razao_social: string | null;
+  cnpj: string | null;
+  setor: string | null;
+  cidade: string | null;
+  uf: string | null;
+  site: string | null;
+  responsavel: string | null;
+  origem: string | null;
+  observacoes: string | null;
+  ultima_proposta: string | null;
+  criado_em: string;
+  atualizado_em: string | null;
+};
+
+export type ContatoEmpresa = {
+  id: number;
+  cliente_id: number;
+  nome: string;
+  cargo: string | null;
+  email: string | null;
+  telefone: string | null;
+  principal: boolean;
+  observacoes: string | null;
 };
 
 export type Pendencia = {

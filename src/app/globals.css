@@ -2119,3 +2119,26 @@ input[type="checkbox"] {
   border: 0;
   margin: 0;
 }
+
+/* ---------- Status das empresas (âmbar fica reservado para alertas) ---------- */
+
+.status-ativo {
+  color: var(--sit-contrato);
+  background: var(--sit-contrato-fundo);
+}
+.status-proposta {
+  color: var(--link);
+  background: color-mix(in srgb, var(--azul-cooesa) 14%, transparent);
+}
+.status-prospeccao {
+  color: var(--texto-2);
+  background: color-mix(in srgb, var(--aco-claro) 22%, transparent);
+}
+.status-inativo {
+  color: var(--sit-cancelada);
+  background: var(--sit-cancelada-fundo);
+}
+.status-nao-atender {
+  color: var(--sit-perdida);
+  background: var(--sit-perdida-fundo);
+}

@@ -30,3 +30,14 @@ export async function unificarCliente(form: FormData) {
   const nomeOrigem = (data as { origem?: string } | null)?.origem ?? "";
   redirect(`/clientes/${dados.data.destino}?unificado=${encodeURIComponent(nomeOrigem)}`);
 }
+
+/** Grava o status sugerido nas empresas sem status (só admin; nunca sobrescreve). */
+export async function aplicarSugestoes(form: FormData) {
+  const sessao = await obterSessao();
+  if (!sessao || !eAdmin(sessao.papel) || form.get("confirmo") !== "1") redirect("/clientes/status-sugerido?erro=1");
+  const db = await criarClienteServidor();
+  const { error } = await db.rpc("aplicar_status_sugerido");
+  if (error) redirect("/clientes/status-sugerido?erro=1");
+  revalidatePath("/clientes");
+  redirect("/clientes?aplicado=1");
+}
