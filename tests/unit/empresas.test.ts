@@ -38,3 +38,36 @@ describe("CNPJ", () => {
     expect(urlSite("http://x.com")).toBe("http://x.com");
   });
 });
+
+describe("formulário de empresa", () => {
+  const base = {
+    nome: "  nova   empresa ltda ",
+    razao_social: "",
+    cnpj: "11.222.333/0001-81",
+    status: "Prospecção",
+    setor: "",
+    cidade: "São Paulo",
+    uf: "sp",
+    site: "",
+    responsavel: "",
+    origem: "",
+    observacoes: "",
+  };
+
+  it("normaliza nome, guarda CNPJ só com dígitos e UF em maiúsculas; vazio vira nulo", async () => {
+    const { esquemaEmpresa } = await import("@/lib/empresas-esquema");
+    const r = esquemaEmpresa.parse(base);
+    expect(r).toMatchObject({ nome: "NOVA EMPRESA LTDA", cnpj: "11222333000181", uf: "SP", razao_social: null, site: null });
+  });
+
+  it("recusa CNPJ inválido, UF inexistente, status fora da lista e nome vazio", async () => {
+    const { esquemaEmpresa } = await import("@/lib/empresas-esquema");
+    const erros = (dados: Partial<typeof base>) =>
+      esquemaEmpresa.safeParse({ ...base, ...dados }).error?.issues.map((i) => i.path[0]) ?? [];
+    expect(erros({ cnpj: "11.222.333/0001-82" })).toEqual(["cnpj"]);
+    expect(erros({ uf: "XX" })).toEqual(["uf"]);
+    expect(erros({ status: "Ótimo" })).toEqual(["status"]);
+    expect(erros({ nome: " " })).toEqual(["nome"]);
+    expect(erros({ cnpj: "" })).toEqual([]);
+  });
+});
