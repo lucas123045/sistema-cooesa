@@ -92,3 +92,17 @@ export function rotuloUsuario(usuario: string): string {
 export function capitalizar(texto: string): string {
   return texto ? texto[0].toLocaleUpperCase("pt-BR") + texto.slice(1) : texto;
 }
+
+/**
+ * Data de hoje no fuso de Brasília. O servidor (Vercel) roda em UTC: perto da meia-noite,
+ * new Date() já está no dia seguinte — e na virada do ano, no ano seguinte.
+ */
+export function hojeBrasil(agora: Date = new Date()): { ano: number; mes: number; dia: number; iso: string } {
+  const partes = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" })
+    .formatToParts(agora)
+    .reduce<Record<string, string>>((acc, p) => ((acc[p.type] = p.value), acc), {});
+  const ano = Number(partes.year);
+  const mes = Number(partes.month);
+  const dia = Number(partes.day);
+  return { ano, mes, dia, iso: `${partes.year}-${partes.month}-${partes.day}` };
+}

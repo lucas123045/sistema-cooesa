@@ -89,7 +89,7 @@ export default async function PaginaClientes(props: PageProps<"/clientes">) {
         </Form>
         {error ? (
           <p className="aviso aviso-erro" style={{ margin: 18 }}>
-            Não foi possível carregar os clientes ({error.message}).
+            Não foi possível carregar os clientes. Recarregue a página; se continuar, avise o administrador.
           </p>
         ) : linhas.length === 0 ? (
           <div className="vazio">

@@ -1,5 +1,6 @@
 import "server-only";
 import ExcelJS from "exceljs";
+import { hojeBrasil } from "@/lib/formato";
 
 export { lerTudo } from "@/lib/consultas";
 
@@ -97,7 +98,5 @@ export function respostaArquivo(conteudo: string | Buffer, nome: string, tipo: "
 }
 
 export function carimboArquivo(): string {
-  const d = new Date();
-  const p = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  return hojeBrasil().iso;
 }

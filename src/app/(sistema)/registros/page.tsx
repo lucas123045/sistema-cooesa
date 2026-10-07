@@ -191,8 +191,8 @@ export default async function PaginaRegistros(props: PageProps<"/registros">) {
 
         {error ? (
           <p className="aviso aviso-erro" style={{ margin: 18 }}>
-            Não foi possível carregar os registros ({error.message}). Recarregue a página; se persistir, verifique a conexão com o
-            Supabase.
+            Não foi possível carregar os registros. Recarregue a página; se continuar, avise o administrador (pode ser a conexão com o
+            Supabase).
           </p>
         ) : linhas.length === 0 ? (
           <div className="vazio">

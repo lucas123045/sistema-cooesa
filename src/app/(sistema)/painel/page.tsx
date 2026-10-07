@@ -3,17 +3,16 @@ import Link from "next/link";
 import { CabecalhoPagina } from "@/components/CabecalhoPagina";
 import { GraficoBarras, GraficoLinha } from "@/components/graficos";
 import { SeloSituacao } from "@/components/SeloSituacao";
-import { formatarData, formatarInteiro, formatarMoeda, formatarPercentual } from "@/lib/formato";
+import { formatarData, formatarInteiro, formatarMoeda, formatarPercentual, hojeBrasil } from "@/lib/formato";
 import { criarClienteServidor, exigirSessao } from "@/lib/supabase/server";
 import type { Resumo, ResumoAnual } from "@/lib/tipos";
 
 type LinhaLista = { num: number; cliente: string; escopo: string | null; situacao: string | null; ano: number };
 
-/** Data de hoje menos 12 meses, em aaaa-mm-dd. */
+/** Data de hoje (Brasília) menos 12 meses, em aaaa-mm-dd. */
 function haDozeMeses(): string {
-  const d = new Date();
-  d.setFullYear(d.getFullYear() - 1);
-  return d.toISOString().slice(0, 10);
+  const h = hojeBrasil();
+  return `${h.ano - 1}${h.iso.slice(4)}`;
 }
 
 export const metadata: Metadata = { title: "Painel executivo" };
@@ -39,7 +38,7 @@ export default async function Painel() {
       <>
         <CabecalhoPagina sobre={<Link href="/">Início</Link>} titulo="Painel executivo" />
         <p className="aviso aviso-erro">
-          Não foi possível carregar o resumo ({resumo.error?.message ?? "sem resposta do banco"}). Confira se as migrações foram
+          Não foi possível carregar o resumo. Confira se as migrações foram
           aplicadas e se a carga (npm run seed) foi feita.
         </p>
       </>
@@ -67,7 +66,7 @@ export default async function Painel() {
       <CabecalhoPagina
         sobre={<Link href="/">Início</Link>}
         titulo="Painel executivo"
-        descricao={`${r.primeiro_ano ?? 2000}–${new Date().getFullYear()}: ${formatarInteiro(r.total_propostas)} propostas, ${formatarInteiro(r.contratos_totais)} contratos.`}
+        descricao={`${r.primeiro_ano ?? 2000}–${hojeBrasil().ano}: ${formatarInteiro(r.total_propostas)} propostas, ${formatarInteiro(r.contratos_totais)} contratos.`}
       />
 
       <div className="pilha">
@@ -91,7 +90,7 @@ export default async function Painel() {
 
         <section className="painel">
           <div className="painel-cabecalho">
-            <h2>{new Date().getFullYear() - (r.primeiro_ano ?? 2000)} anos de Cooesa</h2>
+            <h2>{hojeBrasil().ano - (r.primeiro_ano ?? 2000)} anos de Cooesa</h2>
             <span className="nota">Propostas e contratos por ano · passe o mouse para ver os números</span>
           </div>
           <div className="painel-corpo">

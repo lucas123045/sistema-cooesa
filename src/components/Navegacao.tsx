@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/marca/Logo";
 import { AlternarTema } from "@/components/AlternarTema";
 import { Icone, type NomeIcone } from "@/components/Icone";
@@ -88,15 +88,40 @@ export function Navegacao({ nome, papel, pendencias }: Props) {
   const lista = itens(pendencias).filter((i) => !i.soAdmin || papel === "admin");
   const primeiroNome = nome.split(" ")[0];
 
-  // Fecha o menu do celular com Esc e trava a rolagem do fundo enquanto ele está aberto.
+  const gaveta = useRef<HTMLDivElement>(null);
+
+  // Menu do celular como diálogo acessível: foco vai para dentro, Tab circula só nele,
+  // Esc fecha, o fundo não rola e, ao fechar, o foco volta para quem abriu.
   useEffect(() => {
     if (!aberto) return;
-    const fechar = (e: KeyboardEvent) => e.key === "Escape" && setAberto(false);
-    document.addEventListener("keydown", fechar);
+    const quemAbriu = document.activeElement as HTMLElement | null;
+    const focaveis = () =>
+      Array.from(gaveta.current?.querySelectorAll<HTMLElement>("a[href], button:not([disabled])") ?? []);
+    focaveis()[0]?.focus();
+    const teclado = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setAberto(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const lista = focaveis();
+      if (!lista.length) return;
+      const primeiro = lista[0];
+      const ultimo = lista[lista.length - 1];
+      if (e.shiftKey && document.activeElement === primeiro) {
+        e.preventDefault();
+        ultimo.focus();
+      } else if (!e.shiftKey && document.activeElement === ultimo) {
+        e.preventDefault();
+        primeiro.focus();
+      }
+    };
+    document.addEventListener("keydown", teclado);
     document.body.style.overflow = "hidden";
     return () => {
-      document.removeEventListener("keydown", fechar);
+      document.removeEventListener("keydown", teclado);
       document.body.style.overflow = "";
+      quemAbriu?.focus();
     };
   }, [aberto]);
 
@@ -129,7 +154,7 @@ export function Navegacao({ nome, papel, pendencias }: Props) {
 
       {aberto ? (
         <div className="gaveta-fundo" onClick={() => setAberto(false)}>
-          <div id="menu-movel" className="gaveta" role="dialog" aria-modal="true" aria-label="Menu" onClick={(e) => e.stopPropagation()}>
+          <div id="menu-movel" ref={gaveta} className="gaveta" role="dialog" aria-modal="true" aria-label="Menu" onClick={(e) => e.stopPropagation()}>
             <div className="gaveta-topo">
               <Logo variante="branco" />
               <button type="button" className="menu-botao" aria-label="Fechar menu" onClick={() => setAberto(false)}>

@@ -164,6 +164,24 @@ describe("histórico de alterações", () => {
     });
   });
 
+  it("script com a chave de serviço registra a origem declarada; usuário comum não consegue forjar", async () => {
+    await db.transaction(async (tx) => {
+      await tx.query("select set_config('request.jwt.claims', $1, true)", [JSON.stringify({ role: "service_role" })]);
+      await tx.query("select set_config('request.headers', $1, true)", [JSON.stringify({ "x-origem-alteracao": "Correção autorizada por Lucas" })]);
+      await tx.exec("set local role service_role");
+      await tx.query("update registros set obs = 'via script' where num = 12");
+    });
+    const h = await db.query<{ usuario: string }>("select usuario from historico_alteracoes where tabela = 'registros' and chave = '12' order by id desc limit 1");
+    expect(h.rows[0].usuario).toBe("Correção autorizada por Lucas");
+
+    await como(db, "authenticated", editor, async (tx) => {
+      await tx.query("select set_config('request.headers', $1, true)", [JSON.stringify({ "x-origem-alteracao": "Outra pessoa" })]);
+      await tx.query("update registros set obs = 'pelo editor' where num = 13");
+      const r = await tx.query<{ usuario: string }>("select usuario from historico_alteracoes where tabela = 'registros' and chave = '13' order by id desc limit 1");
+      expect(r.rows[0].usuario).toBe("editor");
+    });
+  });
+
   it("atualização sem mudança real não gera linha no histórico", async () => {
     await como(db, "authenticated", editor, async (tx) => {
       const antes = await contar(tx, "select count(*)::int as n from historico_alteracoes");

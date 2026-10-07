@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { lerTudo } from "@/lib/consultas";
+import { hojeBrasil } from "@/lib/formato";
 import { eAdmin } from "@/lib/papeis";
 import { agregar, agregarPor, contratadoPorCliente, faturadoPorCliente, type NotaResultado, type RegistroResultado } from "@/lib/resultados";
 import { criarClienteServidor, obterSessao } from "@/lib/supabase/server";
@@ -50,7 +51,7 @@ export async function POST() {
     return NextResponse.json({ erro: "Não foi possível carregar os indicadores para a análise." }, { status: 500 });
   }
 
-  const anoAtual = new Date().getFullYear();
+  const anoAtual = hojeBrasil().ano;
   const ultimoAnoNotas = Math.max(0, ...notas.map((n) => n.ano));
   const resumoAno = (ano: number) => {
     const a = agregar(registros.filter((r) => r.ano === ano));

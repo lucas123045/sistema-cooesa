@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CabecalhoPagina } from "@/components/CabecalhoPagina";
 import { GraficoBarras } from "@/components/graficos";
-import { formatarData, formatarInteiro, formatarMoeda, MESES, MESES_CURTOS } from "@/lib/formato";
+import { hojeBrasil, formatarData, formatarInteiro, formatarMoeda, MESES, MESES_CURTOS } from "@/lib/formato";
 import { podeEditar } from "@/lib/papeis";
 import { criarClienteServidor, exigirSessao } from "@/lib/supabase/server";
 import type { FaturamentoMensal, NotaFiscal } from "@/lib/tipos";
@@ -33,7 +33,7 @@ export default async function PaginaFaturamento(props: PageProps<"/faturamento">
   const anuais = (anuaisBrutos ?? []) as Anual[];
   const anoPedido = Number(q.ano);
   // Sem ano na URL, abre no último ano que tem notas (e não no ano corrente, que pode estar vazio).
-  const ano = Number.isInteger(anoPedido) && anoPedido >= 1990 ? anoPedido : (anuais.at(-1)?.ano ?? new Date().getFullYear());
+  const ano = Number.isInteger(anoPedido) && anoPedido >= 1990 ? anoPedido : (anuais.at(-1)?.ano ?? hojeBrasil().ano);
 
   const [mensal, notas] = await Promise.all([
     db.from("vw_faturamento_mensal").select("*").eq("ano", ano),
@@ -45,8 +45,8 @@ export default async function PaginaFaturamento(props: PageProps<"/faturamento">
   const total = meses.reduce((s, m) => s + Number(m.total), 0);
   const tributos = meses.reduce((s, m) => s + Number(m.tributos_total), 0);
   const quantidade = meses.reduce((s, m) => s + m.quantidade, 0);
-  const hoje = new Date();
-  const mesesDecorridos = ano < hoje.getFullYear() ? 12 : ano === hoje.getFullYear() ? hoje.getMonth() + 1 : 12;
+  const hoje = hojeBrasil();
+  const mesesDecorridos = ano === hoje.ano ? hoje.mes : 12;
   const semData = meses.find((m) => m.mes === null);
   const porMes = Array.from({ length: 12 }, (_, i) => Number(meses.find((m) => m.mes === i + 1)?.total ?? 0));
   const aReceberGeral = anuais.reduce((s, a) => s + Number(a.a_receber_valor), 0);

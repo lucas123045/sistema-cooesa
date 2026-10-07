@@ -4,7 +4,7 @@ import Link from "next/link";
 import { CabecalhoPagina } from "@/components/CabecalhoPagina";
 import { GraficoBarras } from "@/components/graficos";
 import { lerTudo } from "@/lib/consultas";
-import { formatarData, formatarDataHora, formatarInteiro, formatarMoeda, formatarPercentual } from "@/lib/formato";
+import { formatarData, formatarDataHora, formatarInteiro, formatarMoeda, formatarPercentual, hojeBrasil } from "@/lib/formato";
 import { eAdmin } from "@/lib/papeis";
 import {
   agregar,
@@ -63,7 +63,7 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
   ]);
 
   // ---------- Período ----------
-  const anoAtual = new Date().getFullYear();
+  const anoAtual = hojeBrasil().ano;
   const primeiroAno = Math.min(...registros.map((r) => r.ano), anoAtual);
   const de = anoParam(q.de) ?? primeiroAno;
   const ate = anoParam(q.ate) ?? anoAtual;
@@ -391,7 +391,7 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
 
         <p className="pequeno muted">
           Regras: contrato = encerrado + em andamento (litígio não conta). Valores em R$ usam só propostas tipo P (valor total); tipo T é
-          mensal e aparece à parte no Painel e nos Clientes. Dados atualizados em {formatarData(new Date().toISOString().slice(0, 10))}
+          mensal e aparece à parte no Painel e nos Clientes. Dados atualizados em {formatarData(hojeBrasil().iso)}
           {analise ? ` · última análise por IA em ${formatarDataHora(analise.gerado_em)}` : ""}.
         </p>
       </div>
