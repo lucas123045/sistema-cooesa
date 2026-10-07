@@ -1,4 +1,4 @@
-import { formatarDataHora } from "@/lib/formato";
+import { formatarDataHora, rotuloUsuario } from "@/lib/formato";
 import { CAMPOS_OCULTOS_HISTORICO, ROTULO_CAMPO } from "@/lib/rotulos";
 import type { LinhaHistorico } from "@/lib/tipos";
 
@@ -36,7 +36,7 @@ export function Historico({ linhas, ocultarCampos = [] }: { linhas: LinhaHistori
           <li key={h.id}>
             <div className="pequeno muted tabular">{formatarDataHora(h.quando)}</div>
             <div>
-              <strong>{ROTULO_ACAO[h.acao]}</strong> <span className="muted">por {h.usuario}</span>
+              <strong>{ROTULO_ACAO[h.acao]}</strong> <span className="muted">por {rotuloUsuario(h.usuario)}</span>
               {difs.length ? (
                 <ul className="diff">
                   {difs.map((d) => (

@@ -82,3 +82,13 @@ export function normalizarBusca(texto: string): string {
     .replace(/\s+/g, " ")
     .trim();
 }
+
+/** Autor de uma alteração no histórico, legível ("sistema (postgres)" vira "Sistema (correção em lote)"). */
+export function rotuloUsuario(usuario: string): string {
+  return /^sistema \(/i.test(usuario) ? "Sistema (correção em lote)" : usuario;
+}
+
+/** Primeira letra maiúscula ("quarta-feira" → "Quarta-feira"). */
+export function capitalizar(texto: string): string {
+  return texto ? texto[0].toLocaleUpperCase("pt-BR") + texto.slice(1) : texto;
+}

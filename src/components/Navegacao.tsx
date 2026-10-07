@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Logo } from "@/components/marca/Logo";
 import { AlternarTema } from "@/components/AlternarTema";
+import { Icone, type NomeIcone } from "@/components/Icone";
 import { ROTULO_PAPEL, type Papel } from "@/lib/papeis";
 import { sair } from "@/app/login/acoes";
 
-type Item = { href: string; rotulo: string; contador?: number; soAdmin?: boolean };
+type Item = { href: string; rotulo: string; icone: NomeIcone; contador?: number; soAdmin?: boolean; grupo?: "analise" };
 
 type Props = {
   nome: string;
@@ -18,16 +19,25 @@ type Props = {
 
 function itens(pendencias: number | null): Item[] {
   return [
-    { href: "/", rotulo: "Painel" },
-    { href: "/resultados", rotulo: "Resultados" },
-    { href: "/registros", rotulo: "Propostas e contratos" },
-    { href: "/curriculo", rotulo: "Currículo" },
-    { href: "/faturamento", rotulo: "Faturamento" },
-    { href: "/clientes", rotulo: "Clientes" },
-    { href: "/pendencias", rotulo: "Pendências de dados", contador: pendencias ?? undefined },
-    { href: "/configuracoes", rotulo: "Configurações", soAdmin: true },
+    { href: "/", rotulo: "Início", icone: "inicio" },
+    { href: "/registros", rotulo: "Propostas e contratos", icone: "propostas" },
+    { href: "/clientes", rotulo: "Clientes", icone: "clientes" },
+    { href: "/faturamento", rotulo: "Faturamento", icone: "faturamento" },
+    { href: "/curriculo", rotulo: "Currículo", icone: "curriculo" },
+    { href: "/painel", rotulo: "Painel executivo", icone: "painel", grupo: "analise" },
+    { href: "/resultados", rotulo: "Resultados", icone: "resultados", grupo: "analise" },
+    { href: "/pendencias", rotulo: "Pendências de dados", icone: "pendencias", contador: pendencias ?? undefined, grupo: "analise" },
+    { href: "/configuracoes", rotulo: "Configurações", icone: "configuracoes", soAdmin: true, grupo: "analise" },
   ];
 }
+
+/** Barra inferior do celular: o que se usa com o polegar. */
+const ABAS: { href: string; rotulo: string; icone: NomeIcone }[] = [
+  { href: "/", rotulo: "Início", icone: "inicio" },
+  { href: "/registros", rotulo: "Propostas", icone: "propostas" },
+  { href: "/clientes", rotulo: "Clientes", icone: "clientes" },
+  { href: "/faturamento", rotulo: "Faturamento", icone: "faturamento" },
+];
 
 function ativo(caminho: string, href: string) {
   return href === "/" ? caminho === "/" : caminho === href || caminho.startsWith(href + "/");
@@ -36,14 +46,13 @@ function ativo(caminho: string, href: string) {
 function Menu({ caminho, lista, aoNavegar }: { caminho: string; lista: Item[]; aoNavegar?: () => void }) {
   return (
     <ul className="menu">
-      {lista.map((item) => (
-        <li key={item.href}>
-          <Link
-            href={item.href}
-            aria-current={ativo(caminho, item.href) ? "page" : undefined}
-            onClick={aoNavegar}
-          >
-            <span>{item.rotulo}</span>
+      {lista.map((item, i) => (
+        <li key={item.href} className={item.grupo && lista[i - 1] && !lista[i - 1].grupo ? "menu-separador" : undefined}>
+          <Link href={item.href} aria-current={ativo(caminho, item.href) ? "page" : undefined} onClick={aoNavegar}>
+            <span className="menu-rotulo">
+              <Icone nome={item.icone} tamanho={18} />
+              {item.rotulo}
+            </span>
             {item.contador ? (
               <span className="menu-contador" aria-label={`${item.contador} pendências`}>
                 {item.contador}
@@ -77,11 +86,24 @@ export function Navegacao({ nome, papel, pendencias }: Props) {
   const caminho = usePathname();
   const [aberto, setAberto] = useState(false);
   const lista = itens(pendencias).filter((i) => !i.soAdmin || papel === "admin");
+  const primeiroNome = nome.split(" ")[0];
+
+  // Fecha o menu do celular com Esc e trava a rolagem do fundo enquanto ele está aberto.
+  useEffect(() => {
+    if (!aberto) return;
+    const fechar = (e: KeyboardEvent) => e.key === "Escape" && setAberto(false);
+    document.addEventListener("keydown", fechar);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", fechar);
+      document.body.style.overflow = "";
+    };
+  }, [aberto]);
 
   return (
     <>
       <aside className="lateral" aria-label="Menu principal">
-        <Link href="/" className="lateral-logo" aria-label="Cooesa — Painel">
+        <Link href="/" className="lateral-logo" aria-label="Cooesa — Início">
           <Logo variante="branco" />
           <span className="lateral-sub">Engenharia · Acervo</span>
         </Link>
@@ -93,26 +115,50 @@ export function Navegacao({ nome, papel, pendencias }: Props) {
 
       <header className="topo-movel">
         <div className="topo-movel-barra">
-          <Link href="/" aria-label="Cooesa — Painel">
+          <button type="button" className="menu-botao" aria-expanded={aberto} aria-controls="menu-movel" aria-label="Abrir menu" onClick={() => setAberto(true)}>
+            <Icone nome="menu" tamanho={22} />
+          </button>
+          <Link href="/" aria-label="Cooesa — Início" className="topo-movel-logo">
             <Logo variante="branco" />
           </Link>
-          <button
-            type="button"
-            className="menu-botao"
-            aria-expanded={aberto}
-            aria-controls="menu-movel"
-            onClick={() => setAberto((v) => !v)}
-          >
-            {aberto ? "Fechar" : "Menu"}
-          </button>
+          <span className="topo-movel-ola">
+            Olá, <strong>{primeiroNome}</strong>
+          </span>
         </div>
-        {aberto ? (
-          <nav id="menu-movel">
-            <Menu caminho={caminho} lista={lista} aoNavegar={() => setAberto(false)} />
-            <Rodape nome={nome} papel={papel} />
-          </nav>
-        ) : null}
       </header>
+
+      {aberto ? (
+        <div className="gaveta-fundo" onClick={() => setAberto(false)}>
+          <div id="menu-movel" className="gaveta" role="dialog" aria-modal="true" aria-label="Menu" onClick={(e) => e.stopPropagation()}>
+            <div className="gaveta-topo">
+              <Logo variante="branco" />
+              <button type="button" className="menu-botao" aria-label="Fechar menu" onClick={() => setAberto(false)}>
+                <Icone nome="fechar" tamanho={22} />
+              </button>
+            </div>
+            <nav>
+              <Menu caminho={caminho} lista={lista} aoNavegar={() => setAberto(false)} />
+            </nav>
+            <Rodape nome={nome} papel={papel} />
+          </div>
+        </div>
+      ) : null}
+
+      <nav className="abas-movel" aria-label="Atalhos">
+        {ABAS.map((a) => (
+          <Link key={a.href} href={a.href} aria-current={ativo(caminho, a.href) ? "page" : undefined}>
+            <Icone nome={a.icone} tamanho={22} />
+            <span>{a.rotulo}</span>
+          </Link>
+        ))}
+        <button type="button" onClick={() => setAberto(true)} aria-label="Mais opções" aria-expanded={aberto}>
+          <Icone nome="menu" tamanho={22} />
+          <span>
+            Mais
+            {pendencias ? <i className="abas-ponto" aria-label={`${pendencias} pendências`} /> : null}
+          </span>
+        </button>
+      </nav>
     </>
   );
 }

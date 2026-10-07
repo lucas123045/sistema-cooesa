@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CabecalhoPagina } from "@/components/CabecalhoPagina";
 import { Historico } from "@/components/Historico";
+import { MarcarVisita } from "@/components/recentes";
 import { SeloSituacao } from "@/components/SeloSituacao";
 import { formatarData, formatarMoeda, formatarValorRegistro } from "@/lib/formato";
 import { eAdmin, podeEditar } from "@/lib/papeis";
@@ -67,6 +68,7 @@ export default async function PaginaRegistro(props: PageProps<"/registros/[num]"
 
   return (
     <>
+      <MarcarVisita num={r.num} cliente={r.clientes?.nome ?? "—"} escopo={r.escopo} />
       <CabecalhoPagina
         sobre={
           <>
