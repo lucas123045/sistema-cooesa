@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Icone, type NomeIcone } from "@/components/Icone";
-import { eAdmin } from "@/lib/papeis";
+import { eAdmin, podeEditar } from "@/lib/papeis";
 import { exigirSessao } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Painel de Controle" };
 
 type Area = { href: string; icone: NomeIcone; titulo: string; descricao: string };
+
+/** Cadastro rápido (editor e admin), ao lado do destaque principal. */
+const CADASTRAR: Area = {
+  href: "/cadastrar",
+  icone: "mais",
+  titulo: "Cadastrar",
+  descricao: "Nova proposta, empresa, nota fiscal ou atualização de situação.",
+};
 
 /** Área principal, em destaque. */
 const DESTAQUE: Area = {
@@ -56,16 +64,20 @@ export default async function PainelDeControle() {
         <p>Gestão de propostas, contratos e faturamento da Cooesa Engenharia</p>
       </header>
 
-      <Link href={DESTAQUE.href} className="inicio-destaque">
-        <span className="inicio-destaque-icone">
-          <Icone nome={DESTAQUE.icone} tamanho={26} />
-        </span>
-        <span className="inicio-destaque-texto">
-          <strong>{DESTAQUE.titulo}</strong>
-          <span>{DESTAQUE.descricao}</span>
-        </span>
-        <Icone nome="seta" tamanho={22} className="inicio-destaque-seta" />
-      </Link>
+      <div className="inicio-destaques">
+        {(podeEditar(sessao.papel) ? [CADASTRAR, DESTAQUE] : [DESTAQUE]).map((d) => (
+          <Link key={d.href} href={d.href} className="inicio-destaque">
+            <span className="inicio-destaque-icone">
+              <Icone nome={d.icone} tamanho={26} />
+            </span>
+            <span className="inicio-destaque-texto">
+              <strong>{d.titulo}</strong>
+              <span>{d.descricao}</span>
+            </span>
+            <Icone nome="seta" tamanho={22} className="inicio-destaque-seta" />
+          </Link>
+        ))}
+      </div>
 
       <nav className="inicio-atalhos" aria-label="Áreas do sistema">
         {AREAS.map((a) => (

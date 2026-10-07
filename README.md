@@ -166,6 +166,16 @@ Configuração: em *Settings → Secrets and variables → Actions* crie `SUPABA
 - Numeração: novos registros continuam a partir de 1060. Pode haver lacunas (uma gravação recusada consome o número),
   o que é normal em sequências do PostgreSQL.
 
+### Cadastrar
+
+A área **Cadastrar** (`/cadastrar`, só editor e admin) reúne: **nova proposta** em quatro etapas (cliente → objeto
+técnico → proposta comercial → revisão), **atualizar situação** de propostas em aberto (com anotação, motivo da perda
+e valor do vencedor), nova empresa e nova nota fiscal. A proposta guarda dados de engenharia opcionais: obra,
+município/UF, cliente final, potência (MW), tensão (kV), extensão (km), descrição técnica, modalidade, edital, revisão,
+validade, prazo, homem-hora, responsável técnico, concorrentes e motivo da perda. O rascunho fica salvo no aparelho
+e uma chave de envio impede proposta duplicada por clique duplo. Migração:
+`supabase/migrations/20261009120000_cadastro_propostas.sql` (aplicar com `supabase db push`).
+
 ### Empresas
 
 A área **Empresas** (rota `/clientes`) é o cadastro de clientes e de empresas em prospecção: status de relacionamento

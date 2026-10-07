@@ -9,7 +9,15 @@ import { Icone, type NomeIcone } from "@/components/Icone";
 import { ROTULO_PAPEL, type Papel } from "@/lib/papeis";
 import { sair } from "@/app/login/acoes";
 
-type Item = { href: string; rotulo: string; icone: NomeIcone; contador?: number; soAdmin?: boolean; grupo?: "analise" };
+type Item = {
+  href: string;
+  rotulo: string;
+  icone: NomeIcone;
+  contador?: number;
+  soAdmin?: boolean;
+  soEditor?: boolean;
+  grupo?: "analise";
+};
 
 type Props = {
   nome: string;
@@ -20,6 +28,7 @@ type Props = {
 function itens(pendencias: number | null): Item[] {
   return [
     { href: "/", rotulo: "Painel de Controle", icone: "inicio" },
+    { href: "/cadastrar", rotulo: "Cadastrar", icone: "mais", soEditor: true },
     { href: "/registros", rotulo: "Propostas e contratos", icone: "propostas" },
     { href: "/clientes", rotulo: "Empresas", icone: "clientes" },
     { href: "/faturamento", rotulo: "Faturamento", icone: "faturamento" },
@@ -37,13 +46,18 @@ function itens(pendencias: number | null): Item[] {
   ];
 }
 
-/** Barra inferior do celular: o que se usa com o polegar. */
-const ABAS: { href: string; rotulo: string; icone: NomeIcone }[] = [
-  { href: "/", rotulo: "Início", icone: "inicio" },
-  { href: "/registros", rotulo: "Propostas", icone: "propostas" },
-  { href: "/clientes", rotulo: "Empresas", icone: "clientes" },
-  { href: "/faturamento", rotulo: "Faturamento", icone: "faturamento" },
-];
+/** Barra inferior do celular: o que se usa com o polegar. Cadastrar fica no meio, para quem edita. */
+function abas(papel: Papel): { href: string; rotulo: string; icone: NomeIcone }[] {
+  const editor = papel === "admin" || papel === "editor";
+  return [
+    { href: "/", rotulo: "Início", icone: "inicio" },
+    { href: "/registros", rotulo: "Propostas", icone: "propostas" },
+    editor
+      ? { href: "/cadastrar", rotulo: "Cadastrar", icone: "mais" }
+      : { href: "/faturamento", rotulo: "Faturamento", icone: "faturamento" },
+    { href: "/clientes", rotulo: "Empresas", icone: "clientes" },
+  ];
+}
 
 function ativo(caminho: string, href: string) {
   return href === "/" ? caminho === "/" : caminho === href || caminho.startsWith(href + "/");
@@ -92,7 +106,9 @@ function Rodape({ nome, papel }: { nome: string; papel: Papel }) {
 export function Navegacao({ nome, papel, pendencias }: Props) {
   const caminho = usePathname();
   const [aberto, setAberto] = useState(false);
-  const lista = itens(pendencias).filter((i) => !i.soAdmin || papel === "admin");
+  const lista = itens(pendencias).filter(
+    (i) => (!i.soAdmin || papel === "admin") && (!i.soEditor || papel === "admin" || papel === "editor"),
+  );
   const primeiroNome = nome.split(" ")[0];
 
   const gaveta = useRef<HTMLDivElement>(null);
@@ -191,7 +207,7 @@ export function Navegacao({ nome, papel, pendencias }: Props) {
       ) : null}
 
       <nav className="abas-movel" aria-label="Atalhos">
-        {ABAS.map((a) => (
+        {abas(papel).map((a) => (
           <Link key={a.href} href={a.href} aria-current={ativo(caminho, a.href) ? "page" : undefined}>
             <Icone nome={a.icone} tamanho={22} />
             <span>{a.rotulo}</span>

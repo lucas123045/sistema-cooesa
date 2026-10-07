@@ -70,6 +70,13 @@ test("empresas: filtra por status e abre o detalhe com contatos e propostas", as
   await expect(page.getByText("Não foi possível carregar")).toHaveCount(0);
 });
 
+test("conta de leitura não acessa o Cadastrar", async ({ page }) => {
+  await entrar(page);
+  await expect(page.getByRole("link", { name: /^Cadastrar/ })).toHaveCount(0);
+  await page.goto("/cadastrar/proposta");
+  await expect(page).toHaveURL(/sem-permissao/);
+});
+
 test("exporta o resultado filtrado em CSV no formato do Excel brasileiro", async ({ page }) => {
   await entrar(page);
   await page.goto("/registros?atalho=contratos");

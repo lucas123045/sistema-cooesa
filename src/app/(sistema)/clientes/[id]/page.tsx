@@ -104,7 +104,7 @@ export default async function PaginaEmpresa(props: PageProps<"/clientes/[id]">) 
               <Link className="btn" href={`/clientes/${id}/editar`}>
                 <Icone nome="editar" tamanho={16} /> Editar
               </Link>
-              <Link className="btn btn-primario" href={`/registros/novo?cliente=${id}`}>
+              <Link className="btn btn-primario" href={`/cadastrar/proposta?cliente=${id}`}>
                 <Icone nome="mais" tamanho={16} /> Nova proposta
               </Link>
             </>
@@ -248,7 +248,7 @@ export default async function PaginaEmpresa(props: PageProps<"/clientes/[id]">) 
             <div className="vazio">
               <strong>Nenhuma proposta ainda.</strong>
               {editor ? (
-                <Link href={`/registros/novo?cliente=${id}`}>Cadastrar a primeira proposta para esta empresa</Link>
+                <Link href={`/cadastrar/proposta?cliente=${id}`}>Cadastrar a primeira proposta para esta empresa</Link>
               ) : null}
             </div>
           )}

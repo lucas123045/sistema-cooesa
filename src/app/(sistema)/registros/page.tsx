@@ -67,7 +67,7 @@ export default async function PaginaRegistros(props: PageProps<"/registros">) {
               <Icone nome="exportar" tamanho={16} /> CSV
             </a>
             {podeEditar(sessao.papel) ? (
-              <Link className="btn btn-primario" href="/registros/novo">
+              <Link className="btn btn-primario" href="/cadastrar/proposta">
                 <Icone nome="mais" tamanho={16} /> Nova proposta
               </Link>
             ) : null}

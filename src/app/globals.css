@@ -172,6 +172,11 @@
   box-sizing: border-box;
 }
 
+/* "hidden" sempre esconde, mesmo em elementos com display próprio (ex.: .formulario é grid). */
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   margin: 0;
@@ -2363,4 +2368,73 @@ input[type="checkbox"] {
   .passos li[aria-current="step"] {
     grid-column: span 1;
   }
+}
+
+/* ---------- Atualizar situação ---------- */
+
+.escolha-situacao {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px;
+}
+.escolha-situacao legend {
+  font-family: var(--fonte-titulo);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.opcao-situacao {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  min-height: 56px;
+  border: 1px solid var(--borda);
+  border-left-width: 4px;
+  border-radius: var(--raio-g);
+  background: var(--superficie);
+  cursor: pointer;
+}
+.opcao-situacao input {
+  margin-top: 3px;
+  accent-color: var(--primaria);
+}
+.opcao-situacao.escolhida {
+  border-color: var(--primaria);
+  background: var(--superficie-2);
+}
+.opcao-situacao.grupo-contrato {
+  border-left-color: var(--sit-contrato);
+}
+.opcao-situacao.grupo-aguardando {
+  border-left-color: var(--alerta);
+}
+.opcao-situacao.grupo-perdida {
+  border-left-color: var(--sit-perdida);
+}
+.opcao-situacao.grupo-cancelada {
+  border-left-color: var(--sit-cancelada);
+}
+.opcao-situacao.grupo-litigio {
+  border-left-color: var(--sit-litigio);
+}
+
+/* Painel de Controle: dois destaques lado a lado (Cadastrar e Propostas) */
+.inicio-destaques {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.opcao-situacao > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.opcao-situacao .sub {
+  display: block;
+  font-size: 12.5px;
+  color: var(--texto-2);
 }
