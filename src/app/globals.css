@@ -2245,3 +2245,122 @@ input[type="checkbox"] {
     font-size: 1.05rem;
   }
 }
+
+/* ---------- Cadastrar: assistente em etapas ---------- */
+
+.assistente {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 960px;
+}
+.passos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  counter-reset: passo;
+}
+.passos button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  min-height: 48px;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  color: var(--texto-2);
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-g);
+  cursor: pointer;
+}
+.passo-numero {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--borda-forte);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.passos li[aria-current="step"] button {
+  border-color: var(--primaria);
+  color: var(--texto);
+  font-weight: 600;
+  box-shadow: inset 0 -3px 0 var(--primaria);
+}
+.passos li[aria-current="step"] .passo-numero {
+  background: var(--primaria);
+  border-color: var(--primaria);
+  color: var(--primaria-texto);
+}
+.passos li.feito .passo-numero {
+  background: var(--sucesso-fundo);
+  border-color: var(--sucesso);
+  color: var(--sucesso);
+}
+.assistente-titulo {
+  margin-bottom: 14px;
+}
+.assistente-titulo:focus {
+  outline: none;
+}
+.assistente-rodape {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--borda);
+  background: var(--superficie-2);
+  border-radius: 0 0 var(--raio-g) var(--raio-g);
+}
+.opcoes-linha {
+  display: flex;
+  gap: 16px;
+  min-height: 40px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.link-botao {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--link);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.revisao-proposta dd {
+  white-space: pre-wrap;
+}
+@media (max-width: 900px) {
+  /* rodapé do assistente fica à mão, logo acima das abas do celular */
+  .assistente-rodape {
+    position: sticky;
+    bottom: calc(58px + env(safe-area-inset-bottom));
+    z-index: 5;
+    box-shadow: 0 -2px 8px rgba(15, 20, 29, 0.08);
+  }
+}
+@media (max-width: 600px) {
+  .passo-rotulo {
+    display: none;
+  }
+  .passos li[aria-current="step"] .passo-rotulo {
+    display: inline;
+  }
+  .passos {
+    grid-template-columns: repeat(4, auto);
+    justify-content: start;
+  }
+  .passos li[aria-current="step"] {
+    grid-column: span 1;
+  }
+}
