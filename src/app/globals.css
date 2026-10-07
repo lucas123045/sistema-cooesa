@@ -1674,62 +1674,25 @@ input[type="checkbox"] {
   grid-template-columns: minmax(0, 170px) minmax(0, 1fr) 110px;
 }
 
-/* ---------- Início (lançador) ---------- */
+/* ---------- Painel de Controle (tela inicial) ---------- */
 
 .inicio {
   display: flex;
   flex-direction: column;
   gap: 18px;
-  max-width: 1120px;
+  max-width: 980px;
+  margin: 0 auto;
 }
 .inicio-topo {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  text-align: center;
+  padding: 8px 0 4px;
 }
 .inicio-topo h1 {
-  font-size: 1.75rem;
+  font-size: 1.9rem;
 }
-.inicio-data {
-  margin: 0 0 2px;
-  font-size: 12.5px;
-  color: var(--texto-3);
-}
-.inicio-busca {
-  position: relative;
-  display: flex;
-  gap: 8px;
-  flex: 1;
-  max-width: 460px;
-  min-width: min(100%, 280px);
-}
-.inicio-busca input {
-  min-height: 44px;
-  padding-left: 38px;
-  font-size: 15px;
-}
-.inicio-busca .btn {
-  min-height: 44px;
-}
-.inicio-busca-icone {
-  position: absolute;
-  left: 11px;
-  top: 12px;
-  color: var(--texto-3);
-  pointer-events: none;
-}
-.inicio-acoes {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  scrollbar-width: none;
-}
-.inicio-acoes .btn {
-  min-height: 38px;
-  border-radius: 999px;
+.inicio-topo p {
+  margin: 6px 0 0;
+  color: var(--texto-2);
 }
 
 .inicio-destaque {
@@ -1741,11 +1704,14 @@ input[type="checkbox"] {
   background: var(--azul-cooesa);
   color: #fff;
   box-shadow: 0 6px 18px rgba(39, 54, 76, 0.18);
-  transition: background 120ms ease;
+  transition: background 120ms ease, transform 120ms ease;
 }
 .inicio-destaque:hover {
   text-decoration: none;
   background: var(--azul-profundo);
+}
+.inicio-destaque:active {
+  transform: scale(0.99);
 }
 .inicio-destaque-icone {
   display: grid;
@@ -1778,75 +1744,67 @@ input[type="checkbox"] {
 
 .inicio-atalhos {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
 }
 .atalho-cartao {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  padding: 16px;
-  min-height: 132px;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  padding: 22px 16px 20px;
   border: 1px solid var(--borda);
   border-radius: 10px;
   background: var(--superficie);
   color: var(--texto);
   box-shadow: var(--sombra);
-  transition: border-color 120ms ease, transform 120ms ease;
+  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
 }
 .atalho-cartao:hover {
   text-decoration: none;
   border-color: var(--aco-medio);
+  box-shadow: 0 4px 14px rgba(15, 20, 29, 0.08);
 }
 .atalho-cartao:active {
   transform: scale(0.98);
 }
 .atalho-cartao-icone {
-  margin-bottom: 8px;
   color: var(--link);
-  width: 38px;
-  height: 38px;
-  padding: 8px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  margin-bottom: 4px;
+  border-radius: 10px;
   background: var(--superficie-2);
   box-sizing: border-box;
 }
 .atalho-cartao-titulo {
   font-weight: 600;
-  font-size: 14px;
-}
-.atalho-cartao-valor {
-  font-family: var(--fonte-titulo);
-  font-size: 1.15rem;
-  font-variant-numeric: tabular-nums;
-  margin-top: 2px;
+  font-size: 15px;
 }
 .atalho-cartao-detalhe {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--texto-3);
-  line-height: 1.35;
-}
-.atalho-cartao.alerta {
-  border-color: var(--alerta);
-  box-shadow: inset 3px 0 0 var(--alerta);
-}
-.atalho-cartao.alerta .atalho-cartao-valor {
-  color: var(--alerta-texto);
-}
-.inicio-listas .painel {
-  min-width: 0;
+  line-height: 1.4;
+  max-width: 28ch;
 }
 
+@media (max-width: 760px) {
+  .inicio-atalhos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
 @media (max-width: 600px) {
   .inicio {
     gap: 14px;
   }
   .inicio-topo h1 {
-    font-size: 1.4rem;
+    font-size: 1.45rem;
   }
-  .inicio-busca {
-    max-width: none;
+  .inicio-topo p {
+    font-size: 13px;
   }
   .inicio-destaque {
     padding: 16px;
@@ -1856,12 +1814,10 @@ input[type="checkbox"] {
     width: 44px;
     height: 44px;
   }
-  .inicio-atalhos {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
   .atalho-cartao {
-    min-height: 0;
-    padding: 14px;
+    padding: 16px 10px 14px;
+  }
+  .atalho-cartao-detalhe {
+    font-size: 12px;
   }
 }
