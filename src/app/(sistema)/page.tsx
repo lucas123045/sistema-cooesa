@@ -20,8 +20,8 @@ const AREAS: Area[] = [
   {
     href: "/clientes",
     icone: "clientes",
-    titulo: "Clientes",
-    descricao: "Histórico de propostas, contratos e notas de cada cliente.",
+    titulo: "Empresas",
+    descricao: "Cadastro, status, contatos, propostas e valores de cada empresa.",
   },
   {
     href: "/faturamento",

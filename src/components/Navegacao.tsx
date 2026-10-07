@@ -21,7 +21,7 @@ function itens(pendencias: number | null): Item[] {
   return [
     { href: "/", rotulo: "Painel de Controle", icone: "inicio" },
     { href: "/registros", rotulo: "Propostas e contratos", icone: "propostas" },
-    { href: "/clientes", rotulo: "Clientes", icone: "clientes" },
+    { href: "/clientes", rotulo: "Empresas", icone: "clientes" },
     { href: "/faturamento", rotulo: "Faturamento", icone: "faturamento" },
     { href: "/curriculo", rotulo: "Currículo", icone: "curriculo" },
     { href: "/painel", rotulo: "Visão geral", icone: "painel", grupo: "analise" },
@@ -41,7 +41,7 @@ function itens(pendencias: number | null): Item[] {
 const ABAS: { href: string; rotulo: string; icone: NomeIcone }[] = [
   { href: "/", rotulo: "Início", icone: "inicio" },
   { href: "/registros", rotulo: "Propostas", icone: "propostas" },
-  { href: "/clientes", rotulo: "Clientes", icone: "clientes" },
+  { href: "/clientes", rotulo: "Empresas", icone: "clientes" },
   { href: "/faturamento", rotulo: "Faturamento", icone: "faturamento" },
 ];
 

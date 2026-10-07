@@ -30,7 +30,7 @@ test("todas as áreas abrem a partir do Painel de Controle", async ({ page }) =>
   await entrar(page);
   const areas: [string, RegExp][] = [
     ["Propostas e contratos", /Propostas e contratos/],
-    ["Clientes", /Clientes/],
+    ["Empresas", /Empresas/],
     ["Faturamento", /Faturamento/],
     ["Currículo", /Currículo/],
     ["Visão geral", /Visão geral/],
@@ -56,6 +56,18 @@ test("busca na lista e abre o detalhe do registro", async ({ page }) => {
   await primeiro.getByRole("link").first().click();
   await expect(page).toHaveURL(/\/registros\/\d+$/);
   await expect(page.getByRole("heading", { name: "Histórico de alterações" })).toBeVisible();
+});
+
+test("empresas: filtra por status e abre o detalhe com contatos e propostas", async ({ page }) => {
+  await entrar(page);
+  await page.goto("/clientes?q=cpfl");
+  await expect(page.getByRole("heading", { level: 1, name: "Empresas" })).toBeVisible();
+  await page.locator("table.tabela tbody tr").first().getByRole("link").first().click();
+  await expect(page).toHaveURL(/\/clientes\/\d+$/);
+  await expect(page.getByRole("heading", { name: "Contatos" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Propostas e contratos" })).toBeVisible();
+  await page.goto("/clientes?status=sem");
+  await expect(page.getByText("Não foi possível carregar")).toHaveCount(0);
 });
 
 test("exporta o resultado filtrado em CSV no formato do Excel brasileiro", async ({ page }) => {

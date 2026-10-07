@@ -152,8 +152,8 @@ Configuração: em *Settings → Secrets and variables → Actions* crie `SUPABA
 | Papel | Pode |
 |---|---|
 | **leitura** | consultar tudo (acervo, relatórios, histórico) |
-| **editor** | + criar e editar propostas, notas fiscais e acompanhamentos; marcar pendências como revisadas |
-| **admin** | + excluir registros, unificar clientes, alterar alíquotas, gerenciar papéis, gerar backup |
+| **editor** | + criar e editar propostas, notas fiscais, acompanhamentos, empresas (sem renomear) e contatos; marcar pendências como revisadas |
+| **admin** | + excluir registros, renomear e unificar empresas, aplicar o status sugerido, alterar alíquotas, gerenciar papéis, gerar backup |
 
 - **RLS em todas as tabelas**; as views usam `security_invoker`, então o RLS vale nelas também. As ações de servidor
   checam o papel antes de gravar (primeira barreira) e o banco recusa o que o papel não permite (segunda).
@@ -163,6 +163,17 @@ Configuração: em *Settings → Secrets and variables → Actions* crie `SUPABA
   nada de contato vai para URLs ou logs.
 - Numeração: novos registros continuam a partir de 1060. Pode haver lacunas (uma gravação recusada consome o número),
   o que é normal em sequências do PostgreSQL.
+
+### Empresas
+
+A área **Empresas** (rota `/clientes`) é o cadastro de clientes e de empresas em prospecção: status de relacionamento
+(Prospecção, Proposta em andamento, Cliente ativo, Cliente inativo, Não atender), razão social, CNPJ validado, setor,
+cidade/UF, site, responsável, origem e contatos. Valores (proposto, contratado P e T, faturado) **não são digitados**:
+vêm sempre das propostas e notas. Para as empresas da planilha, o sistema calcula um **status sugerido** e o admin
+aplica em lote em *Empresas → Revisar e aplicar as sugestões*; status escolhidos à mão nunca são sobrescritos.
+Os **contatos** (tabela `contatos_empresa`) são dados pessoais: aparecem só no detalhe da empresa e ficam fora
+das listas e exportações (entram no backup manual, que é restrito ao admin).
+Migração: `supabase/migrations/20261008120000_cadastro_empresas.sql` (aplicar com `supabase db push`).
 
 ## 8. Testes
 

@@ -13,6 +13,7 @@ const TABELAS: [string, string][] = [
   ["taxonomia", "id"],
   ["configuracoes", "chave"],
   ["perfis", "user_id"],
+  ["contatos_empresa", "id"],
   ["pendencias_revisadas", "tipo"],
   ["avisos_importacao", "id"],
   ["historico_alteracoes", "id"],
