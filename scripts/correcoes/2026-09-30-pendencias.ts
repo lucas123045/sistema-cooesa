@@ -17,7 +17,8 @@ const MOTIVO = "Correção de 30/09/2026 autorizada por Lucas; evidências em do
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
   auth: { persistSession: false },
   // Autor que vai para o histórico (migração 20261007120000). Sem isso, aparece "sistema (service_role)".
-  global: { headers: { "x-origem-alteracao": "Correção em lote de 30/09/2026, autorizada por Lucas" } },
+  // Só caracteres ASCII: cabeçalhos HTTP não aceitam acentos (a chamada falha com "Something went wrong").
+  global: { headers: { "x-origem-alteracao": "Correcao em lote de 30/09/2026, autorizada por Lucas" } },
 });
 
 // 1. Datas de início ilegíveis: a única leitura que cai entre as datas dos registros vizinhos

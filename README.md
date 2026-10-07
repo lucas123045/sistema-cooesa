@@ -159,6 +159,8 @@ Configuração: em *Settings → Secrets and variables → Actions* crie `SUPABA
   checam o papel antes de gravar (primeira barreira) e o banco recusa o que o papel não permite (segunda).
 - `historico_alteracoes` é alimentada por triggers e **não pode ser alterada nem apagada** (nem pela service role).
 - A service role só é usada no servidor: rota de keep-alive, tela de usuários (listar contas do Auth) e scripts.
+- Scripts com a service role devem enviar o cabeçalho `x-origem-alteracao` (quem autorizou e por quê), que vai para o
+  histórico como autor. **Só texto sem acentos**: cabeçalhos HTTP não aceitam acentos e a chamada falha.
 - **LGPD**: o campo `contato` só aparece no detalhe do registro (usuário logado); listas e exportações não o incluem;
   nada de contato vai para URLs ou logs.
 - Numeração: novos registros continuam a partir de 1060. Pode haver lacunas (uma gravação recusada consome o número),
