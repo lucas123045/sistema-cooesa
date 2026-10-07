@@ -15,7 +15,7 @@ const campos = [
 ] as const;
 
 export default async function Configuracoes(props: { searchParams: Promise<{ erro?: string; salvo?: string }> }) {
-  await exigirSessao("admin");
+  const sessao = await exigirSessao("admin");
   const query = await props.searchParams;
   const db = await criarClienteServidor();
   const { data, error } = await db
@@ -38,6 +38,12 @@ export default async function Configuracoes(props: { searchParams: Promise<{ err
           </Link>
         }
       />
+      {!sessao.doisPassos ? (
+        <p className="aviso aviso-alerta" style={{ marginBottom: 16 }}>
+          Sua conta de administrador está protegida só pela senha.{" "}
+          <Link href="/conta#dois-passos">Ativar a verificação em dois passos</Link>
+        </p>
+      ) : null}
       <section className="painel">
         <div className="painel-corpo">
           {query.salvo ? <p className="aviso aviso-sucesso">Alíquotas atualizadas.</p> : null}

@@ -79,7 +79,12 @@ Documentadas em [`.env.example`](.env.example). **Nunca commite valores reais** 
      ```
      {{ .SiteURL }}/auth/confirmar?token_hash={{ .TokenHash }}&type=recovery&proximo=/redefinir-senha
      ```
-4. **Primeiro administrador**: `npm run criar-admin -- email@cooesa.com.br "Nome completo"`. Cria a conta com senha provisória
+4. **Senha e verificação em dois passos** (Authentication → Sign In / Providers e Multi-Factor):
+   - *Minimum password length* = 10 e exija letras e números (a tela de troca de senha já pede 10; o Supabase precisa pedir também);
+   - deixe **TOTP** habilitado em *Multi-Factor*. Cada usuário ativa a verificação em **Minha conta** (menu lateral)
+     com um aplicativo autenticador. O banco só libera os dados depois do código (migração
+     `20261007130000_verificacao_dois_passos.sql`), então uma senha vazada não basta nem pela API.
+5. **Primeiro administrador**: `npm run criar-admin -- email@cooesa.com.br "Nome completo"`. Cria a conta com senha provisória
    (mostrada uma vez) ou, se a conta já existe, só a promove a admin. Contas criadas pelo painel do Supabase começam como
    **leitura**; o admin ajusta os papéis em **Configurações → Usuários e permissões**.
 

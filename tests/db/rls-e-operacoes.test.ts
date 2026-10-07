@@ -140,6 +140,25 @@ describe("RLS por papel", () => {
   });
 });
 
+describe("verificação em dois passos", () => {
+  it("quem ativou só acessa os dados depois do código (aal2); sem código vê o próprio perfil e nada mais", async () => {
+    const usuario = await criarUsuario(db, "mfa@cooesa.test", "admin");
+    await db.query("insert into auth.mfa_factors (user_id, status) values ($1, 'verified')", [usuario]);
+    await como(db, "authenticated", usuario, async (tx) => {
+      expect(await contar(tx, "select count(*)::int as n from registros")).toBe(0);
+      expect(await contar(tx, "select count(*)::int as n from perfis")).toBe(1);
+    });
+    const comCodigo = await como(db, "authenticated", usuario, (tx) => contar(tx, "select count(*)::int as n from registros"), false, "aal2");
+    expect(comCodigo).toBeGreaterThan(1000);
+  });
+
+  it("fator ainda não confirmado não bloqueia (cadastro abandonado no meio)", async () => {
+    const usuario = await criarUsuario(db, "mfa2@cooesa.test", "leitura");
+    await db.query("insert into auth.mfa_factors (user_id, status) values ($1, 'unverified')", [usuario]);
+    expect(await como(db, "authenticated", usuario, (tx) => contar(tx, "select count(*)::int as n from registros"))).toBeGreaterThan(1000);
+  });
+});
+
 describe("histórico de alterações", () => {
   it("registra quem mudou, quando e o antes/depois", async () => {
     await como(db, "authenticated", editor, async (tx) => {

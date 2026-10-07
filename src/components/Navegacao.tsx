@@ -73,6 +73,7 @@ function Rodape({ nome, papel }: { nome: string; papel: Papel }) {
       </div>
       <div className="lateral-papel">{ROTULO_PAPEL[papel]}</div>
       <div className="lateral-acoes">
+        <Link href="/conta">Minha conta</Link>
         <AlternarTema />
         <form action={sair}>
           <button type="submit">Sair</button>

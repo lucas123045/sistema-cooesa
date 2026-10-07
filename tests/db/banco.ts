@@ -37,13 +37,14 @@ export async function como<T>(
   sub: string | null,
   fn: (tx: Transaction) => Promise<T>,
   manter = false,
+  aal: "aal1" | "aal2" = "aal1",
 ): Promise<T> {
   let resultado!: T;
   let erro: unknown;
   try {
     await db.transaction(async (tx) => {
       await tx.query("select set_config('request.jwt.claims', $1, true)", [
-        JSON.stringify({ sub, role: papel }),
+        JSON.stringify({ sub, role: papel, aal }),
       ]);
       await tx.exec(`set local role ${papel}`);
       resultado = await fn(tx);

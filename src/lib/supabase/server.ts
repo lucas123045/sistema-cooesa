@@ -41,14 +41,31 @@ export type Sessao = {
   email: string;
   nome: string;
   papel: Papel;
+  /** Verificação em dois passos ativada (e confirmada nesta sessão). */
+  doisPassos: boolean;
 };
 
-/** Usuário logado com perfil. Memoizado por requisição. Retorna null se não houver sessão ou perfil. */
+/** Situação da verificação em dois passos da sessão atual. */
+async function verificacao(supabase: Awaited<ReturnType<typeof criarClienteServidor>>) {
+  const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  return {
+    ativa: data?.nextLevel === "aal2",
+    pendente: data?.currentLevel === "aal1" && data?.nextLevel === "aal2",
+  };
+}
+
+/**
+ * Usuário logado, com perfil e com a verificação em dois passos cumprida (se ativada).
+ * Memoizado por requisição. Retorna null em qualquer outro caso — ações de servidor
+ * que dependem disso falham fechadas.
+ */
 export const obterSessao = cache(async (): Promise<Sessao | null> => {
   const supabase = await criarClienteServidor();
   const { data } = await supabase.auth.getUser();
   const user = data.user;
   if (!user) return null;
+  const v = await verificacao(supabase);
+  if (v.pendente) return null;
   const { data: perfil } = await supabase
     .from("perfis")
     .select("nome, papel")
@@ -60,6 +77,7 @@ export const obterSessao = cache(async (): Promise<Sessao | null> => {
     email: user.email ?? "",
     nome: (perfil.nome as string) || user.email || "",
     papel: perfil.papel as Papel,
+    doisPassos: v.ativa,
   };
 });
 
@@ -67,12 +85,22 @@ export const obterSessao = cache(async (): Promise<Sessao | null> => {
 export async function exigirSessao(minimo: Papel = "leitura"): Promise<Sessao> {
   const sessao = await obterSessao();
   if (!sessao) {
-    // Logado sem perfil (conta criada fora do fluxo) vai para uma tela explicativa, sem loop.
     const supabase = await criarClienteServidor();
     const { data } = await supabase.auth.getUser();
-    redirect(data.user ? "/sem-perfil" : "/login");
+    if (!data.user) redirect("/login");
+    // Falta o código da verificação em dois passos.
+    if ((await verificacao(supabase)).pendente) redirect("/verificacao");
+    // Logado sem perfil (conta criada fora do fluxo) vai para uma tela explicativa, sem loop.
+    redirect("/sem-perfil");
   }
   const ordem: Record<Papel, number> = { leitura: 0, editor: 1, admin: 2 };
   if (ordem[sessao.papel] < ordem[minimo]) redirect("/?sem-permissao=1");
   return sessao;
+}
+
+/** Usuário autenticado só com a senha, que ainda precisa digitar o código (tela /verificacao). */
+export async function precisaDeCodigo(): Promise<boolean> {
+  const supabase = await criarClienteServidor();
+  const { data } = await supabase.auth.getUser();
+  return Boolean(data.user) && (await verificacao(supabase)).pendente;
 }
