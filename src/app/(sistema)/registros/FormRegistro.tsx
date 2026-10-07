@@ -10,6 +10,7 @@ import type { Pendencia, Registro } from "@/lib/tipos";
 import type { Sugestoes } from "@/lib/registros/sugestoes";
 import { valorParaCampo } from "@/lib/valores";
 import { salvarRegistro, type EstadoRegistro } from "./acoes";
+import { CampoMotivoPerda, CamposComerciais, CamposObjetoTecnico } from "./CamposTecnicos";
 
 type Props = {
   registro?: Registro & { cliente_nome: string };
@@ -59,6 +60,7 @@ export function FormRegistro({ registro, clientes, sugestoes, pendencias = [], c
   return (
     <form onSubmit={enviar} className="formulario" noValidate>
       {registro ? <input type="hidden" name="num" value={registro.num} /> : null}
+      <input type="hidden" name="com_tecnicos" value="1" />
 
       {estado.erro ? (
         <p className="aviso aviso-erro c-12" role="alert">
@@ -252,6 +254,30 @@ export function FormRegistro({ registro, clientes, sugestoes, pendencias = [], c
           {campoTexto("empreendimento", "C — Empreendimento", { classe: "c-4", lista: "lista-empreendimento" })}
           {campoTexto("servico", "D — Serviço", { classe: "c-6", lista: "lista-servico" })}
           {campoTexto("especialidade", "E — Especialidade", { classe: "c-6", lista: "lista-especialidade" })}
+        </fieldset>
+      </details>
+
+      {/* Dados técnicos e comerciais: aberta quando já há algo preenchido. */}
+      <details
+        className="c-12 secao-opcional"
+        open={Boolean(
+          registro?.obra ||
+          registro?.modalidade ||
+          registro?.descricao ||
+          registro?.potencia_mw ||
+          registro?.tensao_kv ||
+          registro?.motivo_perda,
+        )}
+      >
+        <summary>Dados técnicos e comerciais · opcional</summary>
+        <fieldset>
+          <legend className="sr-only">Objeto técnico</legend>
+          <CamposObjetoTecnico valores={registro} erros={estado.campos} area={registro?.area ?? ""} />
+        </fieldset>
+        <fieldset>
+          <legend className="sr-only">Dados comerciais</legend>
+          <CamposComerciais valores={registro} erros={estado.campos} />
+          <CampoMotivoPerda valores={registro} erros={estado.campos} />
         </fieldset>
       </details>
 

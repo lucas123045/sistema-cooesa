@@ -16,6 +16,31 @@ export async function generateMetadata(props: PageProps<"/registros/[num]">): Pr
   return { title: `Registro Nº ${num}` };
 }
 
+const numeroBR = (v: number | string) => new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 }).format(Number(v));
+
+/** O registro tem algum dado técnico ou comercial preenchido? */
+function temTecnicos(r: Registro): boolean {
+  return Boolean(
+    r.obra ||
+    r.cliente_final ||
+    r.local_municipio ||
+    r.local_uf ||
+    r.potencia_mw != null ||
+    r.tensao_kv != null ||
+    r.extensao_km != null ||
+    r.modalidade ||
+    r.edital ||
+    r.revisao ||
+    r.validade_dias != null ||
+    r.prazo_meses != null ||
+    r.horas_estimadas != null ||
+    r.responsavel_tecnico ||
+    r.concorrentes ||
+    r.motivo_perda ||
+    r.descricao,
+  );
+}
+
 function Campo({ rotulo, children, largo }: { rotulo: string; children: React.ReactNode; largo?: boolean }) {
   return (
     <div className={largo ? "largo" : undefined}>
@@ -159,6 +184,38 @@ export default async function PaginaRegistro(props: PageProps<"/registros/[num]"
             </Campo>
           </dl>
         </section>
+
+        {temTecnicos(r) ? (
+          <section className="painel">
+            <div className="painel-cabecalho">
+              <h2>Dados técnicos e comerciais</h2>
+              {r.revisao ? <span className="nota">Revisão R{r.revisao}</span> : null}
+            </div>
+            <dl className="definicoes">
+              {r.obra ? <Campo rotulo="Obra / empreendimento">{r.obra}</Campo> : null}
+              {r.cliente_final ? <Campo rotulo="Cliente final">{r.cliente_final}</Campo> : null}
+              {r.local_municipio || r.local_uf ? (
+                <Campo rotulo="Local">{[r.local_municipio, r.local_uf].filter(Boolean).join("/")}</Campo>
+              ) : null}
+              {r.potencia_mw != null ? <Campo rotulo="Potência">{numeroBR(r.potencia_mw)} MW</Campo> : null}
+              {r.tensao_kv != null ? <Campo rotulo="Tensão">{numeroBR(r.tensao_kv)} kV</Campo> : null}
+              {r.extensao_km != null ? <Campo rotulo="Extensão">{numeroBR(r.extensao_km)} km</Campo> : null}
+              {r.modalidade ? <Campo rotulo="Modalidade">{r.modalidade}</Campo> : null}
+              {r.edital ? <Campo rotulo="Edital / processo">{r.edital}</Campo> : null}
+              {r.validade_dias != null ? <Campo rotulo="Validade">{r.validade_dias} dias</Campo> : null}
+              {r.prazo_meses != null ? <Campo rotulo="Prazo de execução">{numeroBR(r.prazo_meses)} meses</Campo> : null}
+              {r.horas_estimadas != null ? <Campo rotulo="Homem-hora estimado">{numeroBR(r.horas_estimadas)} Hh</Campo> : null}
+              {r.responsavel_tecnico ? <Campo rotulo="Responsável técnico">{r.responsavel_tecnico}</Campo> : null}
+              {r.concorrentes ? <Campo rotulo="Concorrentes">{r.concorrentes}</Campo> : null}
+              {r.motivo_perda ? <Campo rotulo="Motivo da perda">{r.motivo_perda}</Campo> : null}
+              {r.descricao ? (
+                <Campo rotulo="Descrição técnica" largo>
+                  <span style={{ whiteSpace: "pre-wrap" }}>{r.descricao}</span>
+                </Campo>
+              ) : null}
+            </dl>
+          </section>
+        ) : null}
 
         <div className="grade grade-2">
           <section className="painel">

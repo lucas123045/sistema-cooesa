@@ -30,13 +30,35 @@ export type LinhaRegistroLista = {
   especialidade: string | null;
 };
 
-export type Registro = Omit<LinhaRegistroLista, "cliente" | "grupo" | "contrato_total"> & {
-  contato: string | null;
-  criado_em: string;
-  criado_por: string | null;
-  atualizado_em: string | null;
-  atualizado_por: string | null;
+/** Dados técnicos e comerciais da proposta (migração 20261009120000). */
+export type DadosTecnicosRegistro = {
+  descricao: string | null;
+  obra: string | null;
+  local_municipio: string | null;
+  local_uf: string | null;
+  cliente_final: string | null;
+  potencia_mw: Num | null;
+  tensao_kv: Num | null;
+  extensao_km: Num | null;
+  modalidade: string | null;
+  edital: string | null;
+  revisao: number;
+  validade_dias: number | null;
+  prazo_meses: Num | null;
+  horas_estimadas: number | null;
+  responsavel_tecnico: string | null;
+  concorrentes: string | null;
+  motivo_perda: string | null;
 };
+
+export type Registro = Omit<LinhaRegistroLista, "cliente" | "grupo" | "contrato_total"> &
+  Partial<DadosTecnicosRegistro> & {
+    contato: string | null;
+    criado_em: string;
+    criado_por: string | null;
+    atualizado_em: string | null;
+    atualizado_por: string | null;
+  };
 
 export type Acompanhamento = {
   id: number;

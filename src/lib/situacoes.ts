@@ -70,3 +70,8 @@ export function somarPorTipo(itens: readonly { tipo: string | null; valor: numbe
   // arredonda em centavos para evitar resíduo de ponto flutuante
   return { P: Math.round(total.P * 100) / 100, T: Math.round(total.T * 100) / 100 };
 }
+
+/** A situação conta como contrato (encerrado ou em andamento)? */
+export function eContratoTotal(situacao: string | null | undefined): boolean {
+  return situacao != null && (SITUACOES_CONTRATO_TOTAL as readonly string[]).includes(situacao);
+}

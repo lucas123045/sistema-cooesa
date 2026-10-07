@@ -5,7 +5,9 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { obterOuCriarCliente } from "@/lib/clientes";
 import { eAdmin, podeEditar } from "@/lib/papeis";
+import { CAMPOS_TECNICOS, esquemaTecnico } from "@/lib/propostas";
 import { CAMPOS_REGISTRO, errosPorCampo, esquemaRegistro, lerFormulario } from "@/lib/registros/esquema";
+import { eContratoTotal } from "@/lib/situacoes";
 import { criarClienteServidor, obterSessao } from "@/lib/supabase/server";
 import { lerValorBR } from "@/lib/valores";
 
@@ -22,8 +24,19 @@ export async function salvarRegistro(_: EstadoRegistro, dados: FormData): Promis
   const numTexto = dados.get("num");
   const num = typeof numTexto === "string" && numTexto ? Number(numTexto) : null;
   const r = esquemaRegistro.safeParse(lerFormulario(dados, CAMPOS_REGISTRO));
-  if (!r.success) return { erro: "Corrija os campos destacados.", campos: errosPorCampo(r.error) };
+  // Dados técnicos e comerciais: só entram quando o formulário os traz (marcador com_tecnicos),
+  // para um formulário antigo nunca apagar o que já foi preenchido.
+  const comTecnicos = dados.get("com_tecnicos") === "1";
+  const rt = comTecnicos ? esquemaTecnico.safeParse(lerFormulario(dados, CAMPOS_TECNICOS)) : null;
+  if (!r.success || (rt && !rt.success)) {
+    return {
+      erro: "Corrija os campos destacados.",
+      campos: { ...(rt && !rt.success ? errosPorCampo(rt.error) : {}), ...(!r.success ? errosPorCampo(r.error) : {}) },
+    };
+  }
   const d = r.data;
+  const tecnicos = rt?.success ? rt.data : {};
+  const chaveEnvio = String(dados.get("chave_envio") ?? "").slice(0, 64) || null;
 
   const supabase = await criarClienteServidor();
 
@@ -42,6 +55,13 @@ export async function salvarRegistro(_: EstadoRegistro, dados: FormData): Promis
 
   const cliente = await obterOuCriarCliente(supabase, d.cliente);
   if ("erro" in cliente) return { erro: cliente.erro, campos: { cliente: cliente.erro } };
+  // Empresa criada agora, junto com a proposta: já nasce com um status coerente.
+  if (cliente.criado) {
+    await supabase
+      .from("clientes")
+      .update({ status: eContratoTotal(d.situacao) ? "Cliente ativo" : "Proposta em andamento" })
+      .eq("id", cliente.id);
+  }
 
   const linha = {
     cliente_id: cliente.id,
@@ -62,6 +82,7 @@ export async function salvarRegistro(_: EstadoRegistro, dados: FormData): Promis
     empreendimento: d.empreendimento,
     servico: d.servico,
     especialidade: d.especialidade,
+    ...tecnicos,
   };
 
   let destino: number;
@@ -70,7 +91,16 @@ export async function salvarRegistro(_: EstadoRegistro, dados: FormData): Promis
     if (error || !data) return { erro: mensagemErroBanco(error?.message) };
     destino = num;
   } else {
-    const { data, error } = await supabase.from("registros").insert(linha).select("num").single();
+    const { data, error } = await supabase
+      .from("registros")
+      .insert({ ...linha, chave_envio: chaveEnvio })
+      .select("num")
+      .single();
+    if (error?.message.includes("registros_chave_envio_unica") && chaveEnvio) {
+      // Mesmo envio chegou duas vezes (clique duplo, rede lenta): devolve a proposta já criada.
+      const { data: existente } = await supabase.from("registros").select("num").eq("chave_envio", chaveEnvio).maybeSingle();
+      if (existente) redirect(`/registros/${existente.num}?salvo=1`);
+    }
     if (error || !data) return { erro: mensagemErroBanco(error?.message) };
     destino = data.num as number;
   }
@@ -94,6 +124,11 @@ function mensagemErroBanco(msg?: string): string {
   if (!msg) return "Você não tem permissão para esta alteração.";
   if (msg.includes("registros_situacao")) return "Situação inválida para este registro.";
   if (msg.includes("registros_escopo")) return "O escopo é obrigatório.";
+  if (msg.includes("registros_tecnicos_positivos")) return "Potência, tensão, extensão, prazo e horas não podem ser negativos.";
+  if (msg.includes("registros_modalidade") || msg.includes("registros_motivo") || msg.includes("registros_local_uf"))
+    return "Algum valor escolhido não é aceito. Confira modalidade, motivo e UF.";
+  if (msg.includes("column") && msg.includes("does not exist"))
+    return "O banco ainda não tem os campos novos de proposta. Peça ao administrador para aplicar as migrações (supabase db push).";
   if (msg.includes("row-level security")) return "Seu papel não permite esta alteração.";
   return "O banco recusou a gravação. Confira os campos e tente de novo.";
 }
