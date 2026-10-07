@@ -11,7 +11,7 @@ export default async function PaginaConta() {
   const sessao = await exigirSessao();
   return (
     <>
-      <CabecalhoPagina sobre={<Link href="/">Painel de Controle</Link>} titulo="Minha conta" />
+      <CabecalhoPagina sobre={<Link href="/">Painel de Controle</Link>} icone="clientes" titulo="Minha conta" />
       <div className="pilha" style={{ maxWidth: 720 }}>
         <section className="painel">
           <dl className="definicoes">

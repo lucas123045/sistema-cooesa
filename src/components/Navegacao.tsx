@@ -19,12 +19,12 @@ type Props = {
 
 function itens(pendencias: number | null): Item[] {
   return [
-    { href: "/", rotulo: "Início", icone: "inicio" },
+    { href: "/", rotulo: "Painel de Controle", icone: "inicio" },
     { href: "/registros", rotulo: "Propostas e contratos", icone: "propostas" },
     { href: "/clientes", rotulo: "Clientes", icone: "clientes" },
     { href: "/faturamento", rotulo: "Faturamento", icone: "faturamento" },
     { href: "/curriculo", rotulo: "Currículo", icone: "curriculo" },
-    { href: "/painel", rotulo: "Painel executivo", icone: "painel", grupo: "analise" },
+    { href: "/painel", rotulo: "Visão geral", icone: "painel", grupo: "analise" },
     { href: "/resultados", rotulo: "Resultados", icone: "resultados", grupo: "analise" },
     { href: "/pendencias", rotulo: "Pendências de dados", icone: "pendencias", contador: pendencias ?? undefined, grupo: "analise" },
     { href: "/configuracoes", rotulo: "Configurações", icone: "configuracoes", soAdmin: true, grupo: "analise" },
@@ -129,7 +129,7 @@ export function Navegacao({ nome, papel, pendencias }: Props) {
   return (
     <>
       <aside className="lateral" aria-label="Menu principal">
-        <Link href="/" className="lateral-logo" aria-label="Cooesa — Início">
+        <Link href="/" className="lateral-logo" aria-label="Cooesa — Painel de Controle">
           <Logo variante="branco" />
           <span className="lateral-sub">Engenharia · Acervo</span>
         </Link>
@@ -144,7 +144,7 @@ export function Navegacao({ nome, papel, pendencias }: Props) {
           <button type="button" className="menu-botao" aria-expanded={aberto} aria-controls="menu-movel" aria-label="Abrir menu" onClick={() => setAberto(true)}>
             <Icone nome="menu" tamanho={22} />
           </button>
-          <Link href="/" aria-label="Cooesa — Início" className="topo-movel-logo">
+          <Link href="/" aria-label="Cooesa — Painel de Controle" className="topo-movel-logo">
             <Logo variante="branco" />
           </Link>
           <span className="topo-movel-ola">

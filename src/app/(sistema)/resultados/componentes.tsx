@@ -48,7 +48,7 @@ type LinhaDesempenho = { chave: string | number; dados: Agregado; href?: string 
 export function TabelaDesempenho({ titulo, linhas, rotuloChave }: { titulo: string; linhas: LinhaDesempenho[]; rotuloChave: string }) {
   return (
     <div className="tabela-rolagem">
-      <table className="tabela compacta" aria-label={titulo}>
+      <table className="tabela tabela-cartoes compacta" aria-label={titulo}>
         <thead>
           <tr>
             <th>{rotuloChave}</th>
@@ -63,16 +63,16 @@ export function TabelaDesempenho({ titulo, linhas, rotuloChave }: { titulo: stri
         <tbody>
           {linhas.map((l) => (
             <tr key={String(l.chave)}>
-              <td>{l.href ? <Link href={l.href}>{l.chave}</Link> : l.chave}</td>
-              <td className="num">{formatarInteiro(l.dados.propostas)}</td>
-              <td className="num">{formatarInteiro(l.dados.contratos)}</td>
-              <td className="celula-taxa">
+              <td className="c-principal">{l.href ? <Link href={l.href}>{l.chave}</Link> : l.chave}</td>
+              <td data-label="Propostas" className="num">{formatarInteiro(l.dados.propostas)}</td>
+              <td data-label="Contratos" className="num">{formatarInteiro(l.dados.contratos)}</td>
+              <td data-label="Sucesso (qtd.)" className="celula-taxa">
                 <MiniBarra pct={l.dados.taxaQuantidade} />
                 <span className="tabular">{formatarPercentual(l.dados.taxaQuantidade)}</span>
               </td>
-              <td className="num">{formatarPercentual(l.dados.taxaValor)}</td>
-              <td className="num">{l.dados.contratadoP ? formatarMoeda(l.dados.contratadoP) : "—"}</td>
-              <td className="num">{l.dados.ticketContratadoP === null ? "—" : formatarMoeda(l.dados.ticketContratadoP)}</td>
+              <td data-label="Sucesso (valor P)" className="num">{formatarPercentual(l.dados.taxaValor)}</td>
+              <td data-label="Contratado (P)" className="num">{l.dados.contratadoP ? formatarMoeda(l.dados.contratadoP) : "—"}</td>
+              <td data-label="Ticket contratado" className="num">{l.dados.ticketContratadoP === null ? "—" : formatarMoeda(l.dados.ticketContratadoP)}</td>
             </tr>
           ))}
         </tbody>

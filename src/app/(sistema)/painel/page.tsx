@@ -15,7 +15,7 @@ function haDozeMeses(): string {
   return `${h.ano - 1}${h.iso.slice(4)}`;
 }
 
-export const metadata: Metadata = { title: "Painel executivo" };
+export const metadata: Metadata = { title: "Visão geral" };
 
 export default async function Painel() {
   await exigirSessao();
@@ -36,7 +36,7 @@ export default async function Painel() {
   if (!r) {
     return (
       <>
-        <CabecalhoPagina sobre={<Link href="/">Início</Link>} titulo="Painel executivo" />
+        <CabecalhoPagina sobre={<Link href="/">Painel de Controle</Link>} icone="painel" titulo="Visão geral" />
         <p className="aviso aviso-erro">
           Não foi possível carregar o resumo. Confira se as migrações foram
           aplicadas e se a carga (npm run seed) foi feita.
@@ -64,8 +64,8 @@ export default async function Painel() {
   return (
     <>
       <CabecalhoPagina
-        sobre={<Link href="/">Início</Link>}
-        titulo="Painel executivo"
+        sobre={<Link href="/">Painel de Controle</Link>}
+        icone="painel" titulo="Visão geral"
         descricao={`${r.primeiro_ano ?? 2000}–${hojeBrasil().ano}: ${formatarInteiro(r.total_propostas)} propostas, ${formatarInteiro(r.contratos_totais)} contratos.`}
       />
 

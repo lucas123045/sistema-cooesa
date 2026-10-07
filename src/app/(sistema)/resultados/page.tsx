@@ -114,6 +114,7 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
     <>
       <CabecalhoPagina
         sobre="Análise comercial"
+        icone="resultados"
         titulo="Resultados"
         descricao="Onde a Cooesa ganha, com quem e com que valores. Complementa o Painel com taxas por valor, desempenho por área e concentração de clientes."
       />

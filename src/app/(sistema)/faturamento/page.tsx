@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CabecalhoPagina } from "@/components/CabecalhoPagina";
 import { GraficoBarras } from "@/components/graficos";
+import { Icone } from "@/components/Icone";
 import { hojeBrasil, formatarData, formatarInteiro, formatarMoeda, MESES, MESES_CURTOS } from "@/lib/formato";
 import { podeEditar } from "@/lib/papeis";
 import { criarClienteServidor, exigirSessao } from "@/lib/supabase/server";
@@ -58,16 +59,17 @@ export default async function PaginaFaturamento(props: PageProps<"/faturamento">
     <>
       <CabecalhoPagina
         sobre="Notas fiscais"
+        icone="faturamento"
         titulo="Faturamento"
         descricao="Tudo é calculado a partir das notas fiscais, nunca de totais digitados. Tributos são estimativas pelas alíquotas das Configurações."
         acoes={
           <>
             <a className="btn" href={`/faturamento/exportar?ano=${ano}`}>
-              Exportar {ano}
+              <Icone nome="exportar" tamanho={16} /> Exportar {ano}
             </a>
             {editor ? (
               <Link className="btn btn-primario" href="/faturamento/notas/nova">
-                Nova nota fiscal
+                <Icone nome="mais" tamanho={16} /> Nova nota fiscal
               </Link>
             ) : null}
           </>
@@ -190,7 +192,7 @@ export default async function PaginaFaturamento(props: PageProps<"/faturamento">
           </div>
           {listaNotas.length ? (
             <div className="tabela-rolagem">
-              <table className="tabela">
+              <table className="tabela tabela-cartoes">
                 <thead>
                   <tr>
                     <th>NF</th>
@@ -205,21 +207,21 @@ export default async function PaginaFaturamento(props: PageProps<"/faturamento">
                 <tbody>
                   {listaNotas.map((n) => (
                     <tr key={n.id} className={n.a_receber ? "linha-alerta" : undefined}>
-                      <td className="tabular">
+                      <td data-label="NF" className="c-topo tabular">
                         {editor ? <Link href={`/faturamento/notas/${n.id}/editar`}>{n.numero || "s/nº"}</Link> : n.numero || "s/nº"}
                       </td>
-                      <td className="tabular">{n.data_emissao ? formatarData(n.data_emissao) : <span className="selo selo-alerta">sem data</span>}</td>
-                      <td className="tabular">{n.data_credito ? formatarData(n.data_credito) : <span className="selo selo-alerta">a receber</span>}</td>
-                      <td>
+                      <td data-label="Emissão" className="tabular">{n.data_emissao ? formatarData(n.data_emissao) : <span className="selo selo-alerta">sem data</span>}</td>
+                      <td data-label="Crédito" className="tabular">{n.data_credito ? formatarData(n.data_credito) : <span className="selo selo-alerta">a receber</span>}</td>
+                      <td className="c-principal">
                         {n.cliente_id ? (
                           <Link href={`/clientes/${n.cliente_id}`}>{n.cliente}</Link>
                         ) : (
                           <span className="muted">{n.empresa_texto ?? "—"}</span>
                         )}
                       </td>
-                      <td className="celula-escopo">{n.titulo ?? "—"}</td>
-                      <td>{n.registro_num ? <Link href={`/registros/${n.registro_num}`}>Nº {n.registro_num}</Link> : "—"}</td>
-                      <td className="num">{formatarMoeda(Number(n.valor))}</td>
+                      <td data-label="Título" className="c-largo celula-escopo">{n.titulo ?? "—"}</td>
+                      <td data-label="Registro">{n.registro_num ? <Link href={`/registros/${n.registro_num}`}>Nº {n.registro_num}</Link> : "—"}</td>
+                      <td data-label="Valor" className="num">{formatarMoeda(Number(n.valor))}</td>
                     </tr>
                   ))}
                 </tbody>

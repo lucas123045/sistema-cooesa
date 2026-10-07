@@ -68,8 +68,14 @@
   --fonte-texto: var(--font-plex), "Segoe UI", system-ui, sans-serif;
 
   /* Métricas */
-  --raio: 4px;
-  --raio-g: 6px;
+  --raio: 6px;
+  --raio-g: 8px;
+  --raio-xg: 12px;
+
+  /* Cartão de destaque do Painel de Controle */
+  --destaque-fundo: var(--azul-cooesa);
+  --destaque-fundo-hover: var(--azul-profundo);
+  --destaque-texto-2: #d9e4ec;
   --sombra: 0 1px 2px rgba(15, 20, 29, 0.06);
   --largura-lateral: 232px;
 
@@ -79,10 +85,10 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --fundo: #0f141d;
-    --superficie: #161e2a;
+    --superficie: #1a2433;
     --superficie-2: #1b2533;
     --superficie-3: #223043;
-    --borda: #2b3749;
+    --borda: #34425a;
     --borda-forte: #3d4b60;
     --texto: #e6eaf0;
     --texto-2: #b3bdca;
@@ -120,10 +126,10 @@
 
 :root[data-theme="dark"] {
   --fundo: #0f141d;
-  --superficie: #161e2a;
+  --superficie: #1a2433;
   --superficie-2: #1b2533;
   --superficie-3: #223043;
-  --borda: #2b3749;
+  --borda: #34425a;
   --borda-forte: #3d4b60;
   --texto: #e6eaf0;
   --texto-2: #b3bdca;
@@ -1683,16 +1689,53 @@ input[type="checkbox"] {
   max-width: 980px;
   margin: 0 auto;
 }
-.inicio-topo {
+/* Faixa em azul profundo atrás do título (sólida — a especificação não usa gradientes) */
+.inicio-faixa {
   text-align: center;
-  padding: 8px 0 4px;
+  background: var(--azul-profundo);
+  color: #fff;
+  border-radius: var(--raio-xg);
+  padding: 30px 20px 26px;
 }
-.inicio-topo h1 {
+.inicio-faixa h1 {
   font-size: 1.9rem;
+  color: #fff;
 }
-.inicio-topo p {
+.inicio-faixa p {
   margin: 6px 0 0;
+  color: var(--destaque-texto-2);
+}
+.inicio-rodape {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
   color: var(--texto-2);
+  border-radius: var(--raio-g);
+}
+.inicio-rodape:hover {
+  color: var(--texto);
+  background: var(--superficie);
+  text-decoration: none;
+}
+
+/* Ícone ao lado do título das páginas */
+.titulo-com-icone {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.titulo-icone {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: var(--raio-g);
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  color: var(--link);
 }
 
 .inicio-destaque {
@@ -1700,15 +1743,15 @@ input[type="checkbox"] {
   align-items: center;
   gap: 16px;
   padding: 20px 22px;
-  border-radius: 10px;
-  background: var(--azul-cooesa);
+  border-radius: var(--raio-xg);
+  background: var(--destaque-fundo);
   color: #fff;
   box-shadow: 0 6px 18px rgba(39, 54, 76, 0.18);
   transition: background 120ms ease, transform 120ms ease;
 }
 .inicio-destaque:hover {
   text-decoration: none;
-  background: var(--azul-profundo);
+  background: var(--destaque-fundo-hover);
 }
 .inicio-destaque:active {
   transform: scale(0.99);
@@ -1719,7 +1762,7 @@ input[type="checkbox"] {
   width: 52px;
   height: 52px;
   flex: none;
-  border-radius: 10px;
+  border-radius: var(--raio-xg);
   background: rgba(255, 255, 255, 0.12);
 }
 .inicio-destaque-texto {
@@ -1736,7 +1779,7 @@ input[type="checkbox"] {
 }
 .inicio-destaque-texto span {
   font-size: 13px;
-  color: #d9e4ec;
+  color: var(--destaque-texto-2);
 }
 .inicio-destaque-seta {
   flex: none;
@@ -1755,7 +1798,7 @@ input[type="checkbox"] {
   gap: 6px;
   padding: 22px 16px 20px;
   border: 1px solid var(--borda);
-  border-radius: 10px;
+  border-radius: var(--raio-xg);
   background: var(--superficie);
   color: var(--texto);
   box-shadow: var(--sombra);
@@ -1775,7 +1818,7 @@ input[type="checkbox"] {
   height: 44px;
   padding: 10px;
   margin-bottom: 4px;
-  border-radius: 10px;
+  border-radius: var(--raio-xg);
   background: var(--superficie-2);
   box-sizing: border-box;
 }
@@ -1800,10 +1843,13 @@ input[type="checkbox"] {
   .inicio {
     gap: 14px;
   }
-  .inicio-topo h1 {
+  .inicio-faixa {
+    padding: 22px 16px 20px;
+  }
+  .inicio-faixa h1 {
     font-size: 1.45rem;
   }
-  .inicio-topo p {
+  .inicio-faixa p {
     font-size: 13px;
   }
   .inicio-destaque {
@@ -1852,4 +1898,193 @@ input[type="checkbox"] {
   padding: 8px;
   border: 1px solid var(--borda);
   border-radius: var(--raio-g);
+}
+
+/* ---------- Tabelas que viram cartões no celular ---------- */
+
+@media (max-width: 640px) {
+  .tabela-cartoes thead {
+    display: none;
+  }
+  .tabela-cartoes,
+  .tabela-cartoes tbody {
+    display: block;
+  }
+  .tabela-cartoes tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 6px 14px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--borda);
+  }
+  .tabela-cartoes tbody tr:hover td {
+    background: none;
+  }
+  .tabela-cartoes td {
+    display: block;
+    border: 0;
+    padding: 0;
+    min-width: 0;
+    max-width: none;
+    text-align: left;
+    order: 5;
+  }
+  .tabela-cartoes td.num {
+    text-align: left;
+  }
+  .tabela-cartoes td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--texto-3);
+    margin-bottom: 1px;
+  }
+  /* Nº e situação na primeira linha, cliente/escopo logo abaixo, ocupando a largura toda */
+  .tabela-cartoes td.c-topo {
+    order: 1;
+  }
+  .tabela-cartoes td.c-topo-dir {
+    order: 2;
+    justify-self: end;
+    align-self: start;
+  }
+  .tabela-cartoes td.c-topo[data-label]::before {
+    display: inline;
+    margin-right: 4px;
+  }
+  .tabela-cartoes td.c-principal {
+    order: 3;
+    grid-column: 1 / -1;
+    font-size: 15px;
+  }
+  .tabela-cartoes td.c-largo {
+    grid-column: 1 / -1;
+  }
+  .tabela-cartoes tr.linha-alerta td:first-child {
+    box-shadow: none;
+  }
+  .tabela-cartoes tr.linha-alerta {
+    box-shadow: inset 3px 0 0 var(--alerta);
+  }
+  .tabela-cartoes .celula-taxa {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .tabela-cartoes .celula-taxa::before {
+    width: 100%;
+  }
+}
+
+/* ---------- Celular: toque e leitura ---------- */
+
+@media (max-width: 900px) {
+  body {
+    font-size: 15px;
+  }
+  .btn {
+    min-height: 44px;
+    padding: 9px 16px;
+    font-size: 14px;
+  }
+  .btn-pequeno {
+    min-height: 40px;
+    padding: 6px 14px;
+    font-size: 13.5px;
+  }
+  .atalho {
+    padding: 8px 14px;
+    font-size: 13.5px;
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="number"],
+  input[type="date"],
+  select,
+  textarea {
+    min-height: 44px;
+    font-size: 16px; /* abaixo de 16px o iPhone dá zoom ao focar o campo */
+  }
+  .pequeno,
+  .sub,
+  .tabela .sub,
+  .nota,
+  .painel-cabecalho .nota,
+  .indicador-detalhe,
+  .campo .ajuda,
+  .atalho-cartao-detalhe,
+  .lista-painel .sub {
+    font-size: 13px;
+  }
+  .tabela {
+    font-size: 14px;
+  }
+  /* Cabeçalho de página enxuto: a descrição longa sai no celular */
+  .cabecalho-pagina {
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+  }
+  .cabecalho-pagina .descricao {
+    display: none;
+  }
+}
+
+/* ---------- Barra de progresso entre páginas ---------- */
+
+.barra-progresso {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  height: 3px;
+  width: 0;
+  background: var(--aco-claro);
+  box-shadow: 0 0 6px rgba(138, 179, 195, 0.6);
+  opacity: 0;
+  animation:
+    barra-surge 120ms linear 150ms forwards,
+    barra-avanca 6s cubic-bezier(0.1, 0.6, 0.2, 1) 150ms forwards;
+}
+@keyframes barra-surge {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes barra-avanca {
+  from {
+    width: 8%;
+  }
+  to {
+    width: 92%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .barra-progresso {
+    animation: barra-surge 1ms linear 150ms forwards;
+    width: 60%;
+  }
+}
+
+/* Seção de formulário que abre e fecha */
+.secao-opcional {
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-g);
+  padding: 0;
+}
+.secao-opcional summary {
+  cursor: pointer;
+  padding: 12px 16px;
+  font-family: var(--fonte-titulo);
+  font-weight: 500;
+  list-style-position: inside;
+}
+.secao-opcional[open] summary {
+  border-bottom: 1px solid var(--borda);
+}
+.secao-opcional fieldset {
+  border: 0;
+  margin: 0;
 }

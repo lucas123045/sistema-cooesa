@@ -116,7 +116,7 @@ export default async function PaginaCliente(props: PageProps<"/clientes/[id]">) 
             <Link href={`/registros?q=${encodeURIComponent(c.nome)}`}>Abrir na lista</Link>
           </div>
           <div className="tabela-rolagem">
-            <table className="tabela">
+            <table className="tabela tabela-cartoes">
               <thead>
                 <tr>
                   <th className="num">Nº</th>
@@ -129,15 +129,15 @@ export default async function PaginaCliente(props: PageProps<"/clientes/[id]">) 
               <tbody>
                 {regs.map((r) => (
                   <tr key={r.num}>
-                    <td className="num">
+                    <td data-label="Nº" className="c-topo num">
                       <Link href={`/registros/${r.num}`}>{r.num}</Link>
                     </td>
-                    <td className="tabular">{r.ano}</td>
-                    <td className="celula-escopo">{r.escopo ?? <em className="muted">sem escopo</em>}</td>
-                    <td>
+                    <td data-label="Ano" className="tabular">{r.ano}</td>
+                    <td className="c-principal celula-escopo">{r.escopo ?? <em className="muted">sem escopo</em>}</td>
+                    <td className="c-topo-dir">
                       <SeloSituacao situacao={r.situacao} />
                     </td>
-                    <td className="num">{r.valor === null ? (r.valor_texto ? `“${r.valor_texto}”` : "—") : formatarValorRegistro(Number(r.valor), r.tipo)}</td>
+                    <td data-label="Valor" className="num">{r.valor === null ? (r.valor_texto ? `“${r.valor_texto}”` : "—") : formatarValorRegistro(Number(r.valor), r.tipo)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -152,7 +152,7 @@ export default async function PaginaCliente(props: PageProps<"/clientes/[id]">) 
           </div>
           {nfs.length ? (
             <div className="tabela-rolagem">
-              <table className="tabela compacta">
+              <table className="tabela tabela-cartoes compacta">
                 <thead>
                   <tr>
                     <th>NF</th>
@@ -165,11 +165,11 @@ export default async function PaginaCliente(props: PageProps<"/clientes/[id]">) 
                 <tbody>
                   {nfs.map((n) => (
                     <tr key={n.id} className={n.a_receber ? "linha-alerta" : undefined}>
-                      <td className="tabular">{n.numero || "s/nº"}</td>
-                      <td className="tabular">{formatarData(n.data_emissao)}</td>
-                      <td className="tabular">{n.data_credito ? formatarData(n.data_credito) : <span className="selo selo-alerta">a receber</span>}</td>
-                      <td className="celula-escopo">{n.titulo ?? "—"}</td>
-                      <td className="num">{formatarMoeda(Number(n.valor))}</td>
+                      <td data-label="NF" className="c-topo tabular">{n.numero || "s/nº"}</td>
+                      <td data-label="Emissão" className="tabular">{formatarData(n.data_emissao)}</td>
+                      <td data-label="Crédito" className="tabular">{n.data_credito ? formatarData(n.data_credito) : <span className="selo selo-alerta">a receber</span>}</td>
+                      <td className="c-principal celula-escopo">{n.titulo ?? "—"}</td>
+                      <td data-label="Valor" className="num">{formatarMoeda(Number(n.valor))}</td>
                     </tr>
                   ))}
                 </tbody>

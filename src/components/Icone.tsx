@@ -21,6 +21,8 @@ const CAMINHOS = {
   fechar: "M6 6l12 12M18 6 6 18",
   relogio: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2",
   editar: "M4 20h4L19 9l-4-4L4 16zM14 6l4 4",
+  exportar: "M12 4v11M7 10l5 5 5-5M5 20h14",
+  imprimir: "M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z",
 } as const;
 
 export type NomeIcone = keyof typeof CAMINHOS;

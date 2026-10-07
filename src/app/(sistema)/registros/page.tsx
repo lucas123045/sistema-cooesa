@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Form from "next/form";
 import Link from "next/link";
 import { CabecalhoPagina } from "@/components/CabecalhoPagina";
+import { Icone } from "@/components/Icone";
 import { SeloSituacao } from "@/components/SeloSituacao";
 import { CabecalhoOrdenavel, Paginacao } from "@/components/tabela";
 import { formatarData, formatarInteiro, formatarValorRegistro } from "@/lib/formato";
@@ -57,19 +58,20 @@ export default async function PaginaRegistros(props: PageProps<"/registros">) {
     <>
       <CabecalhoPagina
         sobre="Acervo comercial"
+        icone="propostas"
         titulo="Propostas e contratos"
         descricao="Todas as propostas desde 2000. Cada linha é uma proposta; a situação diz se virou contrato."
         acoes={
           <>
             <a className="btn" href={`/registros/exportar${paraURL(semPagina)}${paraURL(semPagina) ? "&" : "?"}formato=xlsx`}>
-              Exportar Excel
+              <Icone nome="exportar" tamanho={16} /> Excel
             </a>
             <a className="btn" href={`/registros/exportar${paraURL(semPagina)}${paraURL(semPagina) ? "&" : "?"}formato=csv`}>
-              Exportar CSV
+              <Icone nome="exportar" tamanho={16} /> CSV
             </a>
             {podeEditar(sessao.papel) ? (
               <Link className="btn btn-primario" href="/registros/novo">
-                Nova proposta
+                <Icone nome="mais" tamanho={16} /> Nova proposta
               </Link>
             ) : null}
           </>
@@ -202,7 +204,7 @@ export default async function PaginaRegistros(props: PageProps<"/registros">) {
           </div>
         ) : (
           <div className="tabela-rolagem">
-            <table className="tabela">
+            <table className="tabela tabela-cartoes">
               <thead>
                 <tr>
                   {cabecalho(filtros, "num", "Nº", true, "col-num")}
@@ -216,20 +218,20 @@ export default async function PaginaRegistros(props: PageProps<"/registros">) {
               <tbody>
                 {linhas.map((r) => (
                   <tr key={r.num} className={r.situacao === "Proposta colocada" ? "linha-alerta" : undefined}>
-                    <td className="num">
+                    <td data-label="Nº" className="c-topo num">
                       <Link href={`/registros/${r.num}`}>{r.num}</Link>
                     </td>
-                    <td className="celula-escopo">
+                    <td className="c-principal celula-escopo">
                       <Link href={`/registros/${r.num}`} style={{ color: "var(--texto)", fontWeight: 500 }}>
                         {r.cliente}
                       </Link>
                       <span className="sub">{r.escopo ?? <em className="muted">sem escopo</em>}</span>
                     </td>
-                    <td>
+                    <td data-label="Área">
                       {r.area ?? <span className="muted">—</span>}
                       {r.setor ? <span className="sub">{r.setor}</span> : null}
                     </td>
-                    <td className="tabular" style={{ whiteSpace: "nowrap" }}>
+                    <td data-label="Início" className="tabular" style={{ whiteSpace: "nowrap" }}>
                       {r.data_ini ? formatarData(r.data_ini) : r.data_ini_texto ? (
                         <span className="selo selo-alerta" title="Data original da planilha, ilegível">
                           “{r.data_ini_texto}”
@@ -238,10 +240,10 @@ export default async function PaginaRegistros(props: PageProps<"/registros">) {
                         <span className="muted">{r.ano}</span>
                       )}
                     </td>
-                    <td>
+                    <td className="c-topo-dir">
                       <SeloSituacao situacao={r.situacao} />
                     </td>
-                    <td className="num">
+                    <td data-label="Valor" className="num">
                       {r.valor !== null ? (
                         formatarValorRegistro(Number(r.valor), r.tipo)
                       ) : r.valor_texto ? (

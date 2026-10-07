@@ -190,21 +190,27 @@ export function FormRegistro({ registro, clientes, sugestoes, pendencias = [] }:
         </div>
       </fieldset>
 
-      <fieldset>
-        <legend>Classificação (árvore de pesquisa)</legend>
-        {campoTexto("setor", "A — Setor", { classe: "c-4", lista: "lista-setor" })}
-        {campoTexto("area", "B — Área", { classe: "c-4", lista: "lista-area" })}
-        {campoTexto("empreendimento", "C — Empreendimento", { classe: "c-4", lista: "lista-empreendimento" })}
-        {campoTexto("servico", "D — Serviço", { classe: "c-6", lista: "lista-servico" })}
-        {campoTexto("especialidade", "E — Especialidade", { classe: "c-6", lista: "lista-especialidade" })}
-        {(Object.keys(sugestoes) as (keyof Sugestoes)[]).map((nivel) => (
-          <datalist key={nivel} id={`lista-${nivel}`}>
-            {sugestoes[nivel].map((v) => (
-              <option key={v} value={v} />
-            ))}
-          </datalist>
-        ))}
-      </fieldset>
+      {/* Sugestões do autocompletar (fora da seção que fecha, para valerem sempre) */}
+      {(Object.keys(sugestoes) as (keyof Sugestoes)[]).map((nivel) => (
+        <datalist key={nivel} id={`lista-${nivel}`}>
+          {sugestoes[nivel].map((v) => (
+            <option key={v} value={v} />
+          ))}
+        </datalist>
+      ))}
+
+      {/* Opcional: começa fechada numa proposta nova (formulário mais curto no celular). */}
+      <details className="c-12 secao-opcional" open={Boolean(registro?.setor || registro?.area || registro?.servico)}>
+        <summary>Classificação (árvore de pesquisa) · opcional</summary>
+        <fieldset>
+          <legend className="sr-only">Classificação</legend>
+          {campoTexto("setor", "A — Setor", { classe: "c-4", lista: "lista-setor" })}
+          {campoTexto("area", "B — Área", { classe: "c-4", lista: "lista-area" })}
+          {campoTexto("empreendimento", "C — Empreendimento", { classe: "c-4", lista: "lista-empreendimento" })}
+          {campoTexto("servico", "D — Serviço", { classe: "c-6", lista: "lista-servico" })}
+          {campoTexto("especialidade", "E — Especialidade", { classe: "c-6", lista: "lista-especialidade" })}
+        </fieldset>
+      </details>
 
       <div className="campo c-12">
         <label htmlFor="f-obs">Observações</label>

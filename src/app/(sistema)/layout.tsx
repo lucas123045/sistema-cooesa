@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { BarraProgresso } from "@/components/BarraProgresso";
 import { Navegacao } from "@/components/Navegacao";
 import { criarClienteServidor, exigirSessao } from "@/lib/supabase/server";
 
@@ -30,6 +32,9 @@ export default async function LayoutSistema({ children }: { children: React.Reac
   const pendencias = await contarPendencias();
   return (
     <div className="estrutura">
+      <Suspense fallback={null}>
+        <BarraProgresso />
+      </Suspense>
       <a href="#conteudo" className="pular-conteudo">
         Pular para o conteúdo
       </a>

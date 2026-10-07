@@ -1,10 +1,12 @@
 "use client";
 
+import { Icone } from "@/components/Icone";
+
 /** Abre a impressão do navegador; "Salvar como PDF" gera o currículo com o cabeçalho da Cooesa. */
 export function BotaoImprimir() {
   return (
     <button className="btn" type="button" onClick={() => window.print()}>
-      Imprimir / PDF
+      <Icone nome="imprimir" tamanho={16} /> Imprimir / PDF
     </button>
   );
 }

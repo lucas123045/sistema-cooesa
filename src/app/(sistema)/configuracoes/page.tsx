@@ -30,6 +30,7 @@ export default async function Configuracoes(props: { searchParams: Promise<{ err
     <>
       <CabecalhoPagina
         sobre="Administração"
+        icone="configuracoes"
         titulo="Configurações"
         descricao="Alíquotas estimadas aplicadas sobre o valor das notas fiscais."
         acoes={

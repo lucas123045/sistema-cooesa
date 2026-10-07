@@ -52,6 +52,7 @@ export default async function PaginaPendencias(props: PageProps<"/pendencias">) 
     <>
       <CabecalhoPagina
         sobre="Qualidade do acervo"
+        icone="pendencias"
         titulo="Pendências de dados"
         descricao="Inconsistências herdadas da planilha. O original nunca é apagado: corrija o dado ou confirme que está certo, e a pendência some."
       />
