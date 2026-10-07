@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 /** Rotas acessíveis sem sessão. */
-const PUBLICAS = ["/login", "/recuperar-senha", "/auth/", "/api/keep-alive"];
+const PUBLICAS = ["/login", "/recuperar-senha", "/auth/", "/api/keep-alive", "/manifest.webmanifest"];
 
 /**
  * Renova a sessão do Supabase a cada requisição e manda para o login quem não

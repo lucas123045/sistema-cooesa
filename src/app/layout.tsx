@@ -23,6 +23,17 @@ export const metadata: Metadata = {
   title: { default: "Cooesa Engenharia", template: "%s · Cooesa" },
   description: "Sistema interno de propostas, contratos e faturamento da Cooesa Engenharia.",
   robots: { index: false, follow: false },
+  applicationName: "Cooesa",
+  // Ícone da aba do navegador e da tela inicial (iPhone usa o apple-touch-icon).
+  icons: {
+    icon: [
+      { url: "/icones/icone-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/icones/icone-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/icones/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  // iPhone: nome sob o ícone e abrir em tela cheia, como um aplicativo.
+  appleWebApp: { capable: true, title: "Cooesa", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
