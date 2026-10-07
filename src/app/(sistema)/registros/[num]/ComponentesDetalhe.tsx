@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useTransition } from "react";
+import { alterarStatus } from "@/app/(sistema)/clientes/acoes";
 import { useFormAcao } from "@/components/useFormAcao";
 import { adicionarAcompanhamento, excluirRegistro, type EstadoRegistro } from "../acoes";
 
@@ -58,5 +59,32 @@ export function BotaoExcluirRegistro({ num }: { num: number }) {
         Excluir
       </button>
     </form>
+  );
+}
+
+/** Proposta nova para empresa em Prospecção: sugere (sem forçar) mudar o status. */
+export function SugerirStatusEmpresa({ clienteId, nome }: { clienteId: number; nome: string }) {
+  const [feito, setFeito] = useState<string | null>(null);
+  const [pendente, iniciar] = useTransition();
+  if (feito) return <p className="aviso aviso-sucesso">{feito}</p>;
+  return (
+    <div className="aviso atalhos">
+      <span>
+        <strong>{nome}</strong> está em Prospecção. Com esta proposta, mudar o status para <strong>Proposta em andamento</strong>?
+      </span>
+      <button
+        className="btn btn-pequeno"
+        type="button"
+        disabled={pendente}
+        onClick={() =>
+          iniciar(async () => {
+            const r = await alterarStatus(clienteId, "Proposta em andamento");
+            setFeito(r.erro ?? `Status de ${nome} atualizado para Proposta em andamento.`);
+          })
+        }
+      >
+        Mudar status
+      </button>
+    </div>
   );
 }

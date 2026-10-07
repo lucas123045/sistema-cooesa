@@ -2127,12 +2127,16 @@ input[type="checkbox"] {
   background: var(--sit-contrato-fundo);
 }
 .status-proposta {
-  color: var(--link);
-  background: color-mix(in srgb, var(--azul-cooesa) 14%, transparent);
+  color: var(--primaria-texto);
+  background: var(--primaria);
+}
+.status-proposta::before {
+  background: var(--aco-claro);
 }
 .status-prospeccao {
-  color: var(--texto-2);
-  background: color-mix(in srgb, var(--aco-claro) 22%, transparent);
+  color: var(--link);
+  background: transparent;
+  border-color: var(--aco-medio);
 }
 .status-inativo {
   color: var(--sit-cancelada);
@@ -2141,4 +2145,103 @@ input[type="checkbox"] {
 .status-nao-atender {
   color: var(--sit-perdida);
   background: var(--sit-perdida-fundo);
+}
+
+/* ---------- Detalhe da empresa ---------- */
+
+.faixa-empresa {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 14px 18px;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-g);
+}
+.seletor-status {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 4px 10px;
+}
+.seletor-status .rotulo {
+  grid-column: 1 / -1;
+}
+.seletor-status select {
+  min-width: 220px;
+  width: auto;
+}
+.faixa-dados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin: 0;
+}
+.faixa-dados dt {
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-3);
+}
+.faixa-dados dd {
+  margin: 2px 0 0;
+}
+.lista-contatos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.lista-contatos > li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--borda);
+}
+.lista-contatos > li:last-child {
+  border-bottom: 0;
+}
+.contato-dados {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.contato-dados strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.contato-meios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 13px;
+}
+.form-contato {
+  width: 100%;
+}
+@media (max-width: 600px) {
+  .seletor-status select {
+    min-width: 0;
+    width: 100%;
+  }
+  .lista-contatos > li {
+    flex-direction: column;
+  }
+}
+
+/* Indicadores no celular: valores longos (R$ 1.027.509,50) quebram em vez de cortar */
+@media (max-width: 600px) {
+  .indicador-valor {
+    white-space: normal; /* quebra só entre palavras (depois do "R$"), nunca no meio do número */
+    overflow-wrap: normal;
+    font-size: 1.2rem;
+  }
+  .indicador-valor.menor {
+    font-size: 1.05rem;
+  }
 }

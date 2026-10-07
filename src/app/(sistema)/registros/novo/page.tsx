@@ -8,10 +8,13 @@ import { FormRegistro } from "../FormRegistro";
 
 export const metadata: Metadata = { title: "Nova proposta" };
 
-export default async function PaginaNovoRegistro() {
+export default async function PaginaNovoRegistro(props: PageProps<"/registros/novo">) {
   await exigirSessao("editor");
   const supabase = await criarClienteServidor();
   const [clientes, sugestoes] = await Promise.all([nomesClientes(supabase), carregarSugestoes(supabase)]);
+  // "Nova proposta" a partir do detalhe da empresa: ?cliente=<id> já preenche o cliente.
+  const clienteId = Number((await props.searchParams).cliente);
+  const clienteInicial = clientes.find((c) => c.id === clienteId)?.nome;
   return (
     <>
       <CabecalhoPagina
@@ -21,7 +24,7 @@ export default async function PaginaNovoRegistro() {
       />
       <div className="painel">
         <div className="painel-corpo">
-          <FormRegistro clientes={clientes.map((c) => c.nome)} sugestoes={sugestoes} />
+          <FormRegistro clientes={clientes.map((c) => c.nome)} sugestoes={sugestoes} clienteInicial={clienteInicial} />
         </div>
       </div>
     </>

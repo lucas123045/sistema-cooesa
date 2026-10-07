@@ -9,7 +9,7 @@ import { eAdmin, podeEditar } from "@/lib/papeis";
 import { ROTULO_TIPO_PENDENCIA } from "@/lib/rotulos";
 import { criarClienteServidor, exigirSessao } from "@/lib/supabase/server";
 import type { Acompanhamento, LinhaHistorico, NotaFiscal, Pendencia, Registro } from "@/lib/tipos";
-import { BotaoExcluirRegistro, FormAcompanhamento } from "./ComponentesDetalhe";
+import { BotaoExcluirRegistro, FormAcompanhamento, SugerirStatusEmpresa } from "./ComponentesDetalhe";
 
 export async function generateMetadata(props: PageProps<"/registros/[num]">): Promise<Metadata> {
   const { num } = await props.params;
@@ -43,7 +43,7 @@ export default async function PaginaRegistro(props: PageProps<"/registros/[num]"
 
   const supabase = await criarClienteServidor();
   const [reg, acomp, notas, hist, pend] = await Promise.all([
-    supabase.from("registros").select("*, clientes(nome)").eq("num", num).maybeSingle(),
+    supabase.from("registros").select("*, clientes(nome, status)").eq("num", num).maybeSingle(),
     supabase.from("acompanhamentos").select("*").eq("registro_num", num).order("id"),
     supabase.from("vw_notas").select("*").eq("registro_num", num).order("data_emissao"),
     supabase
@@ -57,7 +57,7 @@ export default async function PaginaRegistro(props: PageProps<"/registros/[num]"
   ]);
   if (!reg.data) notFound();
 
-  const r = reg.data as Registro & { clientes: { nome: string } | null };
+  const r = reg.data as Registro & { clientes: { nome: string; status: string | null } | null };
   const acompanhamentos = (acomp.data ?? []) as Acompanhamento[];
   const notasFiscais = (notas.data ?? []) as NotaFiscal[];
   const historico = (hist.data ?? []) as LinhaHistorico[];
@@ -89,6 +89,9 @@ export default async function PaginaRegistro(props: PageProps<"/registros/[num]"
 
       <div className="pilha">
         {q.salvo ? <p className="aviso aviso-sucesso">Registro salvo. A alteração está no histórico abaixo.</p> : null}
+        {q.salvo && editor && r.clientes?.status === "Prospecção" && r.situacao === "Proposta colocada" ? (
+          <SugerirStatusEmpresa clienteId={r.cliente_id} nome={r.clientes.nome} />
+        ) : null}
         {q.vinculado ? <p className="aviso aviso-sucesso">Acompanhamento antigo vinculado a este registro.</p> : null}
         {q.erro === "excluir" ? (
           <p className="aviso aviso-erro">O registro não foi excluído. Só administradores podem excluir.</p>

@@ -16,13 +16,15 @@ type Props = {
   clientes: string[];
   sugestoes: Sugestoes;
   pendencias?: Pendencia[];
+  /** Cliente já escolhido (Nova proposta a partir do detalhe da empresa). */
+  clienteInicial?: string;
 };
 
 const REVISAVEIS = ["data_encerramento", "valor_texto", "cliente_unificado"];
 
-export function FormRegistro({ registro, clientes, sugestoes, pendencias = [] }: Props) {
+export function FormRegistro({ registro, clientes, sugestoes, pendencias = [], clienteInicial }: Props) {
   const [estado, enviar, pendente] = useFormAcao<EstadoRegistro>(salvarRegistro, {});
-  const [cliente, setCliente] = useState(registro?.cliente_nome ?? "");
+  const [cliente, setCliente] = useState(registro?.cliente_nome ?? clienteInicial ?? "");
   const [tipo, setTipo] = useState<string>(registro?.tipo ?? "P");
   const erro = (c: string) => estado.campos?.[c];
   const clienteNovo = cliente.trim() !== "" && !clientes.includes(cliente.trim().replace(/\s+/g, " ").toLocaleUpperCase("pt-BR"));

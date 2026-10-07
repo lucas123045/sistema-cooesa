@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { eStatusEmpresa } from "@/lib/empresas";
 import { CAMPOS_EMPRESA, esquemaEmpresa } from "@/lib/empresas-esquema";
 import { eAdmin, podeEditar } from "@/lib/papeis";
 import { errosPorCampo, lerFormulario } from "@/lib/registros/esquema";
@@ -80,4 +81,80 @@ export async function salvarEmpresa(_: EstadoEmpresa, form: FormData): Promise<E
 
   revalidatePath("/clientes");
   redirect(`/clientes/${resultado.data.id}?salvo=1`);
+}
+
+/** Troca só o status da empresa (seletor no cabeçalho do detalhe). */
+export async function alterarStatus(id: number, status: string): Promise<{ erro?: string }> {
+  const sessao = await obterSessao();
+  if (!sessao || !podeEditar(sessao.papel)) return { erro: "Seu papel não permite alterar o status." };
+  if (!Number.isSafeInteger(id) || !eStatusEmpresa(status)) return { erro: "Status inválido." };
+  const db = await criarClienteServidor();
+  const { data, error } = await db.from("clientes").update({ status }).eq("id", id).select("id").maybeSingle();
+  if (error || !data) return { erro: "O status não foi salvo. Tente de novo." };
+  revalidatePath(`/clientes/${id}`);
+  revalidatePath("/clientes");
+  return {};
+}
+
+const esquemaContato = z.object({
+  cliente_id: z.coerce.number().int().positive(),
+  nome: z.string().trim().min(1, "Informe o nome do contato.").max(120),
+  cargo: z.string().trim().max(120),
+  email: z
+    .string()
+    .trim()
+    .max(200)
+    .refine((v) => v === "" || /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v), "E-mail inválido."),
+  telefone: z.string().trim().max(60),
+  observacoes: z.string().trim().max(1000),
+  principal: z.boolean(),
+});
+
+export type EstadoContato = { erro?: string; campos?: Record<string, string>; ok?: number };
+
+/** Cria (sem id) ou atualiza um contato. Marcar como principal desmarca o anterior. */
+export async function salvarContato(anterior: EstadoContato, form: FormData): Promise<EstadoContato> {
+  const sessao = await obterSessao();
+  if (!sessao || !podeEditar(sessao.papel)) return { erro: "Seu papel não permite editar contatos." };
+  const r = esquemaContato.safeParse({
+    ...lerFormulario(form, ["cliente_id", "nome", "cargo", "email", "telefone", "observacoes"]),
+    principal: form.get("principal") === "1",
+  });
+  if (!r.success) return { erro: "Corrija os campos destacados.", campos: errosPorCampo(r.error) };
+  const idTexto = String(form.get("id") ?? "");
+  const id = idTexto ? Number(idTexto) : null;
+  const d = r.data;
+  const linha = {
+    cliente_id: d.cliente_id,
+    nome: d.nome,
+    cargo: d.cargo || null,
+    email: d.email ? d.email.toLowerCase() : null,
+    telefone: d.telefone || null,
+    observacoes: d.observacoes || null,
+    principal: d.principal,
+  };
+
+  const db = await criarClienteServidor();
+  if (d.principal) {
+    let desmarcar = db.from("contatos_empresa").update({ principal: false }).eq("cliente_id", d.cliente_id).eq("principal", true);
+    if (id !== null) desmarcar = desmarcar.neq("id", id);
+    await desmarcar;
+  }
+  const { error } =
+    id === null
+      ? await db.from("contatos_empresa").insert(linha)
+      : await db.from("contatos_empresa").update(linha).eq("id", id).eq("cliente_id", d.cliente_id);
+  if (error) return { erro: "O contato não foi salvo. Confira os campos e tente de novo." };
+  revalidatePath(`/clientes/${d.cliente_id}`);
+  return { ok: (anterior.ok ?? 0) + 1 };
+}
+
+export async function removerContato(id: number, clienteId: number): Promise<{ erro?: string }> {
+  const sessao = await obterSessao();
+  if (!sessao || !podeEditar(sessao.papel)) return { erro: "Seu papel não permite remover contatos." };
+  const db = await criarClienteServidor();
+  const { error, count } = await db.from("contatos_empresa").delete({ count: "exact" }).eq("id", id).eq("cliente_id", clienteId);
+  if (error || !count) return { erro: "O contato não foi removido." };
+  revalidatePath(`/clientes/${clienteId}`);
+  return {};
 }
