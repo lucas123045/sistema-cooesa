@@ -69,12 +69,23 @@ export default async function PaginaClientes(props: PageProps<"/clientes">) {
 
   return (
     <>
-      <CabecalhoPagina icone="clientes" sobre="Relacionamento comercial" titulo="Clientes" descricao="Propostas, contratos e faturamento de cada cliente desde 2000." />
+      <CabecalhoPagina
+        icone="clientes"
+        sobre="Relacionamento comercial"
+        titulo="Clientes"
+        descricao="Propostas, contratos e faturamento de cada cliente desde 2000."
+      />
       <section className="painel">
         <Form action="/clientes" className="filtros" role="search">
           <div className="campo busca">
             <label htmlFor="q">Buscar cliente</label>
-            <input id="q" name="q" type="search" defaultValue={q} placeholder="Nome do cliente (acentos e maiúsculas não importam)" />
+            <input
+              id="q"
+              name="q"
+              type="search"
+              defaultValue={q}
+              placeholder="Nome do cliente (acentos e maiúsculas não importam)"
+            />
           </div>
           <div className="atalhos">
             <button className="btn btn-primario" type="submit">
@@ -122,13 +133,27 @@ export default async function PaginaClientes(props: PageProps<"/clientes">) {
                       ) : null}
                     </td>
                     <td data-label="Período" className="tabular">
-                      {c.primeiro_ano ? (c.primeiro_ano === c.ultimo_ano ? c.primeiro_ano : `${c.primeiro_ano}–${c.ultimo_ano}`) : "—"}
+                      {c.primeiro_ano
+                        ? c.primeiro_ano === c.ultimo_ano
+                          ? c.primeiro_ano
+                          : `${c.primeiro_ano}–${c.ultimo_ano}`
+                        : "—"}
                     </td>
-                    <td data-label="Propostas" className="num">{formatarInteiro(c.propostas)}</td>
-                    <td data-label="Contratos" className="num">{formatarInteiro(c.contratos)}</td>
-                    <td data-label="Sucesso" className="num">{c.pct_sucesso === null ? "—" : formatarPercentual(Number(c.pct_sucesso))}</td>
-                    <td data-label="Contratado (P)" className="num">{Number(c.valor_contratado_p) ? formatarMoeda(Number(c.valor_contratado_p)) : "—"}</td>
-                    <td data-label="Faturado" className="num">{Number(c.faturado) ? formatarMoeda(Number(c.faturado)) : "—"}</td>
+                    <td data-label="Propostas" className="num">
+                      {formatarInteiro(c.propostas)}
+                    </td>
+                    <td data-label="Contratos" className="num">
+                      {formatarInteiro(c.contratos)}
+                    </td>
+                    <td data-label="Sucesso" className="num">
+                      {c.pct_sucesso === null ? "—" : formatarPercentual(Number(c.pct_sucesso))}
+                    </td>
+                    <td data-label="Contratado (P)" className="num">
+                      {Number(c.valor_contratado_p) ? formatarMoeda(Number(c.valor_contratado_p)) : "—"}
+                    </td>
+                    <td data-label="Faturado" className="num">
+                      {Number(c.faturado) ? formatarMoeda(Number(c.faturado)) : "—"}
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -17,12 +17,32 @@ const DESTAQUE: Area = {
 };
 
 const AREAS: Area[] = [
-  { href: "/clientes", icone: "clientes", titulo: "Clientes", descricao: "Histórico de propostas, contratos e notas de cada cliente." },
-  { href: "/faturamento", icone: "faturamento", titulo: "Faturamento", descricao: "Notas fiscais, créditos e tributos estimados." },
-  { href: "/curriculo", icone: "curriculo", titulo: "Currículo", descricao: "Contratos que comprovam experiência para licitações." },
+  {
+    href: "/clientes",
+    icone: "clientes",
+    titulo: "Clientes",
+    descricao: "Histórico de propostas, contratos e notas de cada cliente.",
+  },
+  {
+    href: "/faturamento",
+    icone: "faturamento",
+    titulo: "Faturamento",
+    descricao: "Notas fiscais, créditos e tributos estimados.",
+  },
+  {
+    href: "/curriculo",
+    icone: "curriculo",
+    titulo: "Currículo",
+    descricao: "Contratos que comprovam experiência para licitações.",
+  },
   { href: "/painel", icone: "painel", titulo: "Visão geral", descricao: "Linha do tempo da empresa e principais indicadores." },
   { href: "/resultados", icone: "resultados", titulo: "Resultados", descricao: "Desempenho por área, gerente e cliente." },
-  { href: "/pendencias", icone: "pendencias", titulo: "Pendências de dados", descricao: "Revisão das inconsistências herdadas da planilha." },
+  {
+    href: "/pendencias",
+    icone: "pendencias",
+    titulo: "Pendências de dados",
+    descricao: "Revisão das inconsistências herdadas da planilha.",
+  },
 ];
 
 /** Tela inicial: só os caminhos para as áreas do sistema. */

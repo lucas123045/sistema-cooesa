@@ -28,7 +28,13 @@ export async function GET(request: NextRequest) {
   ];
 
   const arquivo = await gerarXLSX([
-    { nome: `Notas ${ano}`, titulo: `Cooesa Engenharia — Faturamento ${ano}`, subtitulo: `${notas.length} notas fiscais`, colunas, linhas: notas },
+    {
+      nome: `Notas ${ano}`,
+      titulo: `Cooesa Engenharia — Faturamento ${ano}`,
+      subtitulo: `${notas.length} notas fiscais`,
+      colunas,
+      linhas: notas,
+    },
   ]);
   return respostaArquivo(arquivo, `cooesa-faturamento-${ano}-${carimboArquivo()}.xlsx`, "xlsx");
 }

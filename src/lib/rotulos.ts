@@ -41,7 +41,14 @@ export const ROTULO_CAMPO: Record<string, string> = {
 };
 
 /** Colunas de carimbo que não interessam no diff. */
-export const CAMPOS_OCULTOS_HISTORICO = new Set(["criado_em", "criado_por", "atualizado_em", "atualizado_por", "id", "chave_importacao"]);
+export const CAMPOS_OCULTOS_HISTORICO = new Set([
+  "criado_em",
+  "criado_por",
+  "atualizado_em",
+  "atualizado_por",
+  "id",
+  "chave_importacao",
+]);
 
 export const ROTULO_TIPO_PENDENCIA: Record<string, string> = {
   data_inicio: "Data de início ilegível",

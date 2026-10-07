@@ -54,7 +54,17 @@ const esquemaNota = z
     path: ["data_credito"],
   });
 
-const CAMPOS = ["numero", "data_emissao", "data_credito", "cliente_id", "empresa_texto", "titulo", "valor", "ano", "registro_num"];
+const CAMPOS = [
+  "numero",
+  "data_emissao",
+  "data_credito",
+  "cliente_id",
+  "empresa_texto",
+  "titulo",
+  "valor",
+  "ano",
+  "registro_num",
+];
 
 export async function salvarNota(_: EstadoNota, form: FormData): Promise<EstadoNota> {
   const sessao = await obterSessao();
@@ -72,7 +82,8 @@ export async function salvarNota(_: EstadoNota, form: FormData): Promise<EstadoN
   const db = await criarClienteServidor();
   if (d.registro_num) {
     const { data: reg } = await db.from("registros").select("num").eq("num", d.registro_num).maybeSingle();
-    if (!reg) return { erro: "Corrija os campos destacados.", campos: { registro_num: `O registro Nº ${d.registro_num} não existe.` } };
+    if (!reg)
+      return { erro: "Corrija os campos destacados.", campos: { registro_num: `O registro Nº ${d.registro_num} não existe.` } };
   }
 
   const linha = {
@@ -90,7 +101,8 @@ export async function salvarNota(_: EstadoNota, form: FormData): Promise<EstadoN
     id === null
       ? await db.from("notas_fiscais").insert(linha).select("id").single()
       : await db.from("notas_fiscais").update(linha).eq("id", id).select("id").maybeSingle();
-  if (resultado.error || !resultado.data) return { erro: "O banco recusou a gravação. Confira os campos e se o seu papel permite editar." };
+  if (resultado.error || !resultado.data)
+    return { erro: "O banco recusou a gravação. Confira os campos e se o seu papel permite editar." };
 
   revalidatePath("/", "layout");
   redirect(`/faturamento?ano=${d.ano}&salvo=1`);

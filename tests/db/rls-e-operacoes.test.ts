@@ -26,7 +26,16 @@ const idCliente = async (nome: string) =>
 
 describe("RLS por papel", () => {
   it("anônimo não lê nenhuma tabela nem view", async () => {
-    for (const t of ["registros", "clientes", "notas_fiscais", "acompanhamentos", "historico_alteracoes", "vw_resumo", "vw_registros", "configuracoes"]) {
+    for (const t of [
+      "registros",
+      "clientes",
+      "notas_fiscais",
+      "acompanhamentos",
+      "historico_alteracoes",
+      "vw_resumo",
+      "vw_registros",
+      "configuracoes",
+    ]) {
       await expect(como(db, "anon", null, (tx) => tx.query(`select * from ${t} limit 1`))).rejects.toThrow(/permission denied/);
     }
   });
@@ -53,7 +62,9 @@ describe("RLS por papel", () => {
     });
     await expect(
       como(db, "authenticated", leitor, (tx) =>
-        tx.query("insert into registros (cliente_id, escopo, situacao, tipo, ano) values (1, 'Teste', 'Proposta colocada', 'P', 2026)"),
+        tx.query(
+          "insert into registros (cliente_id, escopo, situacao, tipo, ano) values (1, 'Teste', 'Proposta colocada', 'P', 2026)",
+        ),
       ),
     ).rejects.toThrow(/row-level security/);
   });
@@ -74,9 +85,19 @@ describe("RLS por papel", () => {
   });
 
   it("editor não exclui registro (só admin)", async () => {
-    const n = await como(db, "authenticated", editor, async (tx) => (await tx.query("delete from registros where num = 5")).affectedRows);
+    const n = await como(
+      db,
+      "authenticated",
+      editor,
+      async (tx) => (await tx.query("delete from registros where num = 5")).affectedRows,
+    );
     expect(n).toBe(0);
-    const nAdmin = await como(db, "authenticated", admin, async (tx) => (await tx.query("delete from registros where num = 5")).affectedRows);
+    const nAdmin = await como(
+      db,
+      "authenticated",
+      admin,
+      async (tx) => (await tx.query("delete from registros where num = 5")).affectedRows,
+    );
     expect(nAdmin).toBe(1); // desfeito no fim da transação de teste
   });
 
@@ -100,12 +121,18 @@ describe("RLS por papel", () => {
   });
 
   it("só admin altera configurações", async () => {
-    const e = await como(db, "authenticated", editor, async (tx) =>
-      (await tx.query("update configuracoes set valor = '5' where chave = 'aliquota_iss'")).affectedRows,
+    const e = await como(
+      db,
+      "authenticated",
+      editor,
+      async (tx) => (await tx.query("update configuracoes set valor = '5' where chave = 'aliquota_iss'")).affectedRows,
     );
     expect(e).toBe(0);
-    const a = await como(db, "authenticated", admin, async (tx) =>
-      (await tx.query("update configuracoes set valor = '5' where chave = 'aliquota_iss'")).affectedRows,
+    const a = await como(
+      db,
+      "authenticated",
+      admin,
+      async (tx) => (await tx.query("update configuracoes set valor = '5' where chave = 'aliquota_iss'")).affectedRows,
     );
     expect(a).toBe(1);
   });
@@ -125,18 +152,32 @@ describe("RLS por papel", () => {
   });
 
   it("admin lê todas as tabelas do backup manual; editor não vê perfis alheios", async () => {
-    const tabelas = ["clientes", "registros", "acompanhamentos", "notas_fiscais", "taxonomia", "configuracoes", "perfis", "pendencias_revisadas", "avisos_importacao", "historico_alteracoes"];
+    const tabelas = [
+      "clientes",
+      "registros",
+      "acompanhamentos",
+      "notas_fiscais",
+      "taxonomia",
+      "configuracoes",
+      "perfis",
+      "pendencias_revisadas",
+      "avisos_importacao",
+      "historico_alteracoes",
+    ];
     await como(db, "authenticated", admin, async (tx) => {
-      for (const t of tabelas) expect(await contar(tx, `select count(*)::int as n from ${t}`)).toBeGreaterThanOrEqual(t === "pendencias_revisadas" ? 0 : 1);
+      for (const t of tabelas)
+        expect(await contar(tx, `select count(*)::int as n from ${t}`)).toBeGreaterThanOrEqual(
+          t === "pendencias_revisadas" ? 0 : 1,
+        );
       expect(await contar(tx, "select count(*)::int as n from perfis")).toBe(3); // admin, editor e leitor (o 4º não tem perfil)
     });
     expect(await como(db, "authenticated", editor, (tx) => contar(tx, "select count(*)::int as n from perfis"))).toBe(1);
   });
 
   it("só a service_role executa a importação", async () => {
-    await expect(
-      como(db, "authenticated", admin, (tx) => tx.query("select importar_planilha('{}'::jsonb)")),
-    ).rejects.toThrow(/permission denied/);
+    await expect(como(db, "authenticated", admin, (tx) => tx.query("select importar_planilha('{}'::jsonb)"))).rejects.toThrow(
+      /permission denied/,
+    );
   });
 });
 
@@ -148,14 +189,23 @@ describe("verificação em dois passos", () => {
       expect(await contar(tx, "select count(*)::int as n from registros")).toBe(0);
       expect(await contar(tx, "select count(*)::int as n from perfis")).toBe(1);
     });
-    const comCodigo = await como(db, "authenticated", usuario, (tx) => contar(tx, "select count(*)::int as n from registros"), false, "aal2");
+    const comCodigo = await como(
+      db,
+      "authenticated",
+      usuario,
+      (tx) => contar(tx, "select count(*)::int as n from registros"),
+      false,
+      "aal2",
+    );
     expect(comCodigo).toBeGreaterThan(1000);
   });
 
   it("fator ainda não confirmado não bloqueia (cadastro abandonado no meio)", async () => {
     const usuario = await criarUsuario(db, "mfa2@cooesa.test", "leitura");
     await db.query("insert into auth.mfa_factors (user_id, status) values ($1, 'unverified')", [usuario]);
-    expect(await como(db, "authenticated", usuario, (tx) => contar(tx, "select count(*)::int as n from registros"))).toBeGreaterThan(1000);
+    expect(
+      await como(db, "authenticated", usuario, (tx) => contar(tx, "select count(*)::int as n from registros")),
+    ).toBeGreaterThan(1000);
   });
 });
 
@@ -186,17 +236,25 @@ describe("histórico de alterações", () => {
   it("script com a chave de serviço registra a origem declarada; usuário comum não consegue forjar", async () => {
     await db.transaction(async (tx) => {
       await tx.query("select set_config('request.jwt.claims', $1, true)", [JSON.stringify({ role: "service_role" })]);
-      await tx.query("select set_config('request.headers', $1, true)", [JSON.stringify({ "x-origem-alteracao": "Correção autorizada por Lucas" })]);
+      await tx.query("select set_config('request.headers', $1, true)", [
+        JSON.stringify({ "x-origem-alteracao": "Correção autorizada por Lucas" }),
+      ]);
       await tx.exec("set local role service_role");
       await tx.query("update registros set obs = 'via script' where num = 12");
     });
-    const h = await db.query<{ usuario: string }>("select usuario from historico_alteracoes where tabela = 'registros' and chave = '12' order by id desc limit 1");
+    const h = await db.query<{ usuario: string }>(
+      "select usuario from historico_alteracoes where tabela = 'registros' and chave = '12' order by id desc limit 1",
+    );
     expect(h.rows[0].usuario).toBe("Correção autorizada por Lucas");
 
     await como(db, "authenticated", editor, async (tx) => {
-      await tx.query("select set_config('request.headers', $1, true)", [JSON.stringify({ "x-origem-alteracao": "Outra pessoa" })]);
+      await tx.query("select set_config('request.headers', $1, true)", [
+        JSON.stringify({ "x-origem-alteracao": "Outra pessoa" }),
+      ]);
       await tx.query("update registros set obs = 'pelo editor' where num = 13");
-      const r = await tx.query<{ usuario: string }>("select usuario from historico_alteracoes where tabela = 'registros' and chave = '13' order by id desc limit 1");
+      const r = await tx.query<{ usuario: string }>(
+        "select usuario from historico_alteracoes where tabela = 'registros' and chave = '13' order by id desc limit 1",
+      );
       expect(r.rows[0].usuario).toBe("editor");
     });
   });
@@ -224,7 +282,10 @@ describe("unificação de clientes", () => {
     await como(db, "authenticated", admin, async (tx) => {
       const nOrigem = await contar(tx, `select count(*)::int as n from registros where cliente_id = ${origem}`);
       const nDestino = await contar(tx, `select count(*)::int as n from registros where cliente_id = ${destino}`);
-      const r = await tx.query<{ unificar_clientes: { registros: number } }>("select unificar_clientes($1, $2)", [origem, destino]);
+      const r = await tx.query<{ unificar_clientes: { registros: number } }>("select unificar_clientes($1, $2)", [
+        origem,
+        destino,
+      ]);
       expect(r.rows[0].unificar_clientes.registros).toBe(nOrigem);
       expect(await contar(tx, `select count(*)::int as n from registros where cliente_id = ${destino}`)).toBe(nOrigem + nDestino);
       expect(await contar(tx, `select count(*)::int as n from clientes where id = ${origem}`)).toBe(0);
@@ -237,9 +298,9 @@ describe("unificação de clientes", () => {
       );
       expect(h.rows[0].antes.nome).toBe("QUANTA CONSULTORIA");
       // a busca do registro passa a achar pelo nome novo
-      expect(await contar(tx, `select count(*)::int as n from registros where cliente_id = ${destino} and busca like '%quanta%'`)).toBe(
-        nOrigem + nDestino,
-      );
+      expect(
+        await contar(tx, `select count(*)::int as n from registros where cliente_id = ${destino} and busca like '%quanta%'`),
+      ).toBe(nOrigem + nDestino);
     });
   });
 
@@ -247,10 +308,18 @@ describe("unificação de clientes", () => {
     const origem = await idCliente("VIVAN ENGENHARIA");
     const destino = await idCliente("VIVAN");
     await como(db, "authenticated", admin, async (tx) => {
-      const antes = await contar(tx, "select count(*)::int as n from vw_pendencias where tipo = 'cliente_duplicado' and referencia like 'VIVAN%'");
+      const antes = await contar(
+        tx,
+        "select count(*)::int as n from vw_pendencias where tipo = 'cliente_duplicado' and referencia like 'VIVAN%'",
+      );
       expect(antes).toBe(1);
       await tx.query("select unificar_clientes($1, $2)", [origem, destino]);
-      expect(await contar(tx, "select count(*)::int as n from vw_pendencias where tipo = 'cliente_duplicado' and referencia like 'VIVAN%'")).toBe(0);
+      expect(
+        await contar(
+          tx,
+          "select count(*)::int as n from vw_pendencias where tipo = 'cliente_duplicado' and referencia like 'VIVAN%'",
+        ),
+      ).toBe(0);
     });
   });
 

@@ -62,7 +62,11 @@ function Dica({ indice, total, children }: { indice: number; total: number; chil
   const centro = MARGEM.esquerda + (larguraUtil / total) * (indice + 0.5);
   const pos = indice < total * 0.2 ? "0" : indice > total * 0.8 ? "-100%" : "-50%";
   return (
-    <div className="dica-grafico" role="status" style={{ left: `${(centro / L) * 100}%`, top: 0, transform: `translateX(${pos})` }}>
+    <div
+      className="dica-grafico"
+      role="status"
+      style={{ left: `${(centro / L) * 100}%`, top: 0, transform: `translateX(${pos})` }}
+    >
       {children}
     </div>
   );
@@ -259,7 +263,9 @@ export function GraficoLinha({ titulo, categorias, valores, nome, formato, altur
         {ativo !== null ? <line className="eixo" x1={x(ativo)} x2={x(ativo)} y1={MARGEM.topo} y2={y(0)} /> : null}
         <path className="linha-serie" d={d} />
         {valores.map((v, i) =>
-          v !== null && (ativo === i || i === n - 1) ? <circle key={i} className="ponto-serie" cx={x(i)} cy={y(v)} r={4.5} /> : null,
+          v !== null && (ativo === i || i === n - 1) ? (
+            <circle key={i} className="ponto-serie" cx={x(i)} cy={y(v)} r={4.5} />
+          ) : null,
         )}
         {categorias.map((cat, i) => (
           <g key={cat}>

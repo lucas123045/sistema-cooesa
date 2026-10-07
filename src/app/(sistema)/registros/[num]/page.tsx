@@ -90,7 +90,9 @@ export default async function PaginaRegistro(props: PageProps<"/registros/[num]"
       <div className="pilha">
         {q.salvo ? <p className="aviso aviso-sucesso">Registro salvo. A alteração está no histórico abaixo.</p> : null}
         {q.vinculado ? <p className="aviso aviso-sucesso">Acompanhamento antigo vinculado a este registro.</p> : null}
-        {q.erro === "excluir" ? <p className="aviso aviso-erro">O registro não foi excluído. Só administradores podem excluir.</p> : null}
+        {q.erro === "excluir" ? (
+          <p className="aviso aviso-erro">O registro não foi excluído. Só administradores podem excluir.</p>
+        ) : null}
 
         {pendencias.length ? (
           <div className="aviso aviso-alerta">
@@ -133,7 +135,9 @@ export default async function PaginaRegistro(props: PageProps<"/registros/[num]"
               {r.data_enc ? formatarData(r.data_enc) : null}
               <Original texto={r.data_enc_texto} />
             </Campo>
-            <Campo rotulo="Tipo">{r.tipo === "T" ? "T — trabalho / mão de obra (valor mensal)" : "P — produção / serviço (valor total)"}</Campo>
+            <Campo rotulo="Tipo">
+              {r.tipo === "T" ? "T — trabalho / mão de obra (valor mensal)" : "P — produção / serviço (valor total)"}
+            </Campo>
             <Campo rotulo="Valor da proposta">
               <span className="tabular">{r.valor !== null ? formatarValorRegistro(Number(r.valor), r.tipo) : null}</span>
               <Original texto={r.valor_texto} />
@@ -163,7 +167,9 @@ export default async function PaginaRegistro(props: PageProps<"/registros/[num]"
               <ul className="linha-tempo">
                 {acompanhamentos.map((a) => (
                   <li key={a.id}>
-                    <div className="pequeno muted">{a.fonte === "Sistema" ? formatarData(a.criado_em.slice(0, 10)) : a.fonte}</div>
+                    <div className="pequeno muted">
+                      {a.fonte === "Sistema" ? formatarData(a.criado_em.slice(0, 10)) : a.fonte}
+                    </div>
                     <div>
                       {a.situacao_na_epoca ? <SeloSituacao situacao={a.situacao_na_epoca} /> : null}
                       {a.obs ? <p style={{ margin: "4px 0 0" }}>{a.obs}</p> : null}
@@ -206,7 +212,9 @@ export default async function PaginaRegistro(props: PageProps<"/registros/[num]"
                           <span className="sub">{n.titulo}</span>
                         </td>
                         <td className="tabular">{formatarData(n.data_emissao)}</td>
-                        <td className="tabular">{n.data_credito ? formatarData(n.data_credito) : <span className="selo selo-alerta">a receber</span>}</td>
+                        <td className="tabular">
+                          {n.data_credito ? formatarData(n.data_credito) : <span className="selo selo-alerta">a receber</span>}
+                        </td>
                         <td className="num">{formatarMoeda(Number(n.valor))}</td>
                       </tr>
                     ))}

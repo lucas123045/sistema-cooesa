@@ -49,12 +49,24 @@ export function FormNota({ nota, clientes }: { nota?: NotaForm; clientes: { id: 
       </div>
       <div className="campo c-4">
         <label htmlFor="data_emissao">Emissão</label>
-        <input id="data_emissao" name="data_emissao" type="date" defaultValue={nota?.data_emissao ?? ""} aria-invalid={erro("data_emissao") ? true : undefined} />
+        <input
+          id="data_emissao"
+          name="data_emissao"
+          type="date"
+          defaultValue={nota?.data_emissao ?? ""}
+          aria-invalid={erro("data_emissao") ? true : undefined}
+        />
         <ErroCampo mensagem={erro("data_emissao")} />
       </div>
       <div className="campo c-4">
         <label htmlFor="data_credito">Crédito</label>
-        <input id="data_credito" name="data_credito" type="date" defaultValue={nota?.data_credito ?? ""} aria-invalid={erro("data_credito") ? true : undefined} />
+        <input
+          id="data_credito"
+          name="data_credito"
+          type="date"
+          defaultValue={nota?.data_credito ?? ""}
+          aria-invalid={erro("data_credito") ? true : undefined}
+        />
         <span className="ajuda">Vazio = a receber.</span>
         <ErroCampo mensagem={erro("data_credito")} />
       </div>
@@ -99,7 +111,14 @@ export function FormNota({ nota, clientes }: { nota?: NotaForm; clientes: { id: 
       </div>
       <div className="campo c-4">
         <label htmlFor="registro_num">Registro (Nº da proposta)</label>
-        <input id="registro_num" name="registro_num" type="number" min={1} defaultValue={nota?.registro_num ?? ""} aria-invalid={erro("registro_num") ? true : undefined} />
+        <input
+          id="registro_num"
+          name="registro_num"
+          type="number"
+          min={1}
+          defaultValue={nota?.registro_num ?? ""}
+          aria-invalid={erro("registro_num") ? true : undefined}
+        />
         <ErroCampo mensagem={erro("registro_num")} />
       </div>
       <div className="c-12 atalhos">

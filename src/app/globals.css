@@ -1602,7 +1602,9 @@ input[type="checkbox"] {
 }
 
 /* ---------- Resultados ---------- */
-.resultado-resumo { margin: 0; }
+.resultado-resumo {
+  margin: 0;
+}
 .resultado-resumo > div {
   display: flex;
   align-items: baseline;
@@ -1611,8 +1613,12 @@ input[type="checkbox"] {
   padding: 10px 0;
   border-bottom: 1px solid var(--borda);
 }
-.resultado-resumo > div:last-child { border-bottom: 0; }
-.resultado-resumo dt { color: var(--texto-2); }
+.resultado-resumo > div:last-child {
+  border-bottom: 0;
+}
+.resultado-resumo dt {
+  color: var(--texto-2);
+}
 .resultado-resumo dd {
   margin: 0;
   font-variant-numeric: tabular-nums;
@@ -1626,10 +1632,18 @@ input[type="checkbox"] {
   background: var(--superficie-2);
   white-space: pre-wrap;
 }
-.resultado-ia p:last-child { margin-bottom: 0; }
+.resultado-ia p:last-child {
+  margin-bottom: 0;
+}
 @media (max-width: 520px) {
-  .resultado-resumo > div { align-items: flex-start; flex-direction: column; gap: 2px; }
-  .resultado-resumo dd { text-align: left; }
+  .resultado-resumo > div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .resultado-resumo dd {
+    text-align: left;
+  }
 }
 
 .variacao {
@@ -1670,12 +1684,24 @@ input[type="checkbox"] {
   margin-top: 2px;
 }
 /* Carteira por situação: mesmas cores fixas dos selos de situação */
-.barras-situacao .preenchido.sit-contrato { background: var(--sit-contrato); }
-.barras-situacao .preenchido.sit-aguardando { background: var(--alerta); }
-.barras-situacao .preenchido.sit-perdida { background: var(--sit-perdida); }
-.barras-situacao .preenchido.sit-cancelada { background: var(--sit-cancelada); }
-.barras-situacao .preenchido.sit-litigio { background: var(--sit-litigio); }
-.barras-situacao .preenchido.sit-sem { background: var(--borda-forte); }
+.barras-situacao .preenchido.sit-contrato {
+  background: var(--sit-contrato);
+}
+.barras-situacao .preenchido.sit-aguardando {
+  background: var(--alerta);
+}
+.barras-situacao .preenchido.sit-perdida {
+  background: var(--sit-perdida);
+}
+.barras-situacao .preenchido.sit-cancelada {
+  background: var(--sit-cancelada);
+}
+.barras-situacao .preenchido.sit-litigio {
+  background: var(--sit-litigio);
+}
+.barras-situacao .preenchido.sit-sem {
+  background: var(--borda-forte);
+}
 .barras-situacao li {
   grid-template-columns: minmax(0, 170px) minmax(0, 1fr) 110px;
 }
@@ -1747,7 +1773,9 @@ input[type="checkbox"] {
   background: var(--destaque-fundo);
   color: #fff;
   box-shadow: 0 6px 18px rgba(39, 54, 76, 0.18);
-  transition: background 120ms ease, transform 120ms ease;
+  transition:
+    background 120ms ease,
+    transform 120ms ease;
 }
 .inicio-destaque:hover {
   text-decoration: none;
@@ -1802,7 +1830,10 @@ input[type="checkbox"] {
   background: var(--superficie);
   color: var(--texto);
   box-shadow: var(--sombra);
-  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
 }
 .atalho-cartao:hover {
   text-decoration: none;

@@ -61,7 +61,10 @@ describe("agregar", () => {
 
 describe("agregarPor", () => {
   it("agrupa vazios em “Sem classificação”", () => {
-    const g = agregarPor([reg({ area: "Geração" }), reg({ area: null }), reg({ area: "Geração", contrato_total: true })], (r) => r.area);
+    const g = agregarPor(
+      [reg({ area: "Geração" }), reg({ area: null }), reg({ area: "Geração", contrato_total: true })],
+      (r) => r.area,
+    );
     const porChave = Object.fromEntries(g.map((x) => [x.chave, x.dados.propostas]));
     expect(porChave).toEqual({ Geração: 2, "Sem classificação": 1 });
   });
@@ -87,7 +90,15 @@ describe("concentracao", () => {
 
 describe("situacaoCreditos", () => {
   it("separa pendente de verdade de nota sem dados", () => {
-    const n = (p: Partial<NotaResultado>): NotaResultado => ({ ano: 2024, valor: 100, data_emissao: "2024-01-01", data_credito: null, cliente_id: 1, cliente: "A", ...p });
+    const n = (p: Partial<NotaResultado>): NotaResultado => ({
+      ano: 2024,
+      valor: 100,
+      data_emissao: "2024-01-01",
+      data_credito: null,
+      cliente_id: 1,
+      cliente: "A",
+      ...p,
+    });
     const s = situacaoCreditos([n({ data_credito: "2024-02-01" }), n({}), n({ data_emissao: null, valor: 50 })]);
     expect(s).toMatchObject({ creditado: 100, semCredito: 100, qtdSemCredito: 1, semDados: 50, qtdSemDados: 1, total: 250 });
   });

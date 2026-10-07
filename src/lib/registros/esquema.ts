@@ -15,20 +15,18 @@ const dataOpcional = z
   .refine((v) => v === "" || /^\d{4}-\d{2}-\d{2}$/.test(v), "Data inválida. Use dd/mm/aaaa.")
   .transform((v) => (v === "" ? null : v));
 
-const valorOpcional = z
-  .string()
-  .transform((v, ctx) => {
-    const n = lerValorBR(v);
-    if (Number.isNaN(n)) {
-      ctx.addIssue({ code: "custom", message: "Valor inválido. Use o formato 1.234,56." });
-      return z.NEVER;
-    }
-    if (n !== null && n < 0) {
-      ctx.addIssue({ code: "custom", message: "O valor não pode ser negativo." });
-      return z.NEVER;
-    }
-    return n;
-  });
+const valorOpcional = z.string().transform((v, ctx) => {
+  const n = lerValorBR(v);
+  if (Number.isNaN(n)) {
+    ctx.addIssue({ code: "custom", message: "Valor inválido. Use o formato 1.234,56." });
+    return z.NEVER;
+  }
+  if (n !== null && n < 0) {
+    ctx.addIssue({ code: "custom", message: "O valor não pode ser negativo." });
+    return z.NEVER;
+  }
+  return n;
+});
 
 /** Nome de cliente como é gravado: maiúsculas, espaços simples. */
 export function normalizarNomeCliente(nome: string): string {

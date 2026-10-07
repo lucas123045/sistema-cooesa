@@ -45,10 +45,7 @@ export default async function PaginaRegistros(props: PageProps<"/registros">) {
   let consulta = aplicarFiltros(supabase.from("vw_registros").select(COLUNAS_LISTA, { count: "exact" }), filtros);
   consulta = consulta.order(COLUNAS_ORDEM[filtros.ordem], { ascending: filtros.dir === "asc", nullsFirst: false });
   if (filtros.ordem !== "num") consulta = consulta.order("num", { ascending: false });
-  const [{ data, count, error }, opcoes] = await Promise.all([
-    consulta.range(inicio, inicio + POR_PAGINA - 1),
-    opcoesFiltros(),
-  ]);
+  const [{ data, count, error }, opcoes] = await Promise.all([consulta.range(inicio, inicio + POR_PAGINA - 1), opcoesFiltros()]);
   const linhas = (data ?? []) as unknown as LinhaRegistroLista[];
   const total = count ?? 0;
   const url = (mudar: Partial<FiltrosRegistros>) => `/registros${paraURL(filtros, mudar)}`;
@@ -175,16 +172,32 @@ export default async function PaginaRegistros(props: PageProps<"/registros">) {
 
         <div className="barra-resultado">
           <div className="atalhos" aria-label="Atalhos">
-            <Link className="atalho" href={url({ atalho: "", situacao: "", pagina: 1 })} aria-pressed={!filtros.atalho && !filtros.situacao}>
+            <Link
+              className="atalho"
+              href={url({ atalho: "", situacao: "", pagina: 1 })}
+              aria-pressed={!filtros.atalho && !filtros.situacao}
+            >
               Todas
             </Link>
-            <Link className="atalho" href={url({ atalho: "contratos", situacao: "", pagina: 1 })} aria-pressed={filtros.atalho === "contratos"}>
+            <Link
+              className="atalho"
+              href={url({ atalho: "contratos", situacao: "", pagina: 1 })}
+              aria-pressed={filtros.atalho === "contratos"}
+            >
               Só contratos
             </Link>
-            <Link className="atalho" href={url({ atalho: "aguardando", situacao: "", pagina: 1 })} aria-pressed={filtros.atalho === "aguardando"}>
+            <Link
+              className="atalho"
+              href={url({ atalho: "aguardando", situacao: "", pagina: 1 })}
+              aria-pressed={filtros.atalho === "aguardando"}
+            >
               Aguardando
             </Link>
-            <Link className="atalho" href={url({ atalho: "litigio", situacao: "", pagina: 1 })} aria-pressed={filtros.atalho === "litigio"}>
+            <Link
+              className="atalho"
+              href={url({ atalho: "litigio", situacao: "", pagina: 1 })}
+              aria-pressed={filtros.atalho === "litigio"}
+            >
               Em litígio
             </Link>
           </div>
@@ -193,14 +206,13 @@ export default async function PaginaRegistros(props: PageProps<"/registros">) {
 
         {error ? (
           <p className="aviso aviso-erro" style={{ margin: 18 }}>
-            Não foi possível carregar os registros. Recarregue a página; se continuar, avise o administrador (pode ser a conexão com o
-            Supabase).
+            Não foi possível carregar os registros. Recarregue a página; se continuar, avise o administrador (pode ser a conexão
+            com o Supabase).
           </p>
         ) : linhas.length === 0 ? (
           <div className="vazio">
             <strong>Nenhum registro com esses filtros.</strong>
-            Limpe a busca ou mude o ano.{" "}
-            <Link href="/registros">Ver todos</Link>
+            Limpe a busca ou mude o ano. <Link href="/registros">Ver todos</Link>
           </div>
         ) : (
           <div className="tabela-rolagem">
@@ -232,7 +244,9 @@ export default async function PaginaRegistros(props: PageProps<"/registros">) {
                       {r.setor ? <span className="sub">{r.setor}</span> : null}
                     </td>
                     <td data-label="Início" className="tabular" style={{ whiteSpace: "nowrap" }}>
-                      {r.data_ini ? formatarData(r.data_ini) : r.data_ini_texto ? (
+                      {r.data_ini ? (
+                        formatarData(r.data_ini)
+                      ) : r.data_ini_texto ? (
                         <span className="selo selo-alerta" title="Data original da planilha, ilegível">
                           “{r.data_ini_texto}”
                         </span>

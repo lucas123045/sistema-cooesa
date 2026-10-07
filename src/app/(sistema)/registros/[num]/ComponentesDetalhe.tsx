@@ -16,7 +16,12 @@ export function FormAcompanhamento({ num }: { num: number }) {
       <input type="hidden" name="registro_num" value={num} />
       <div className="campo c-8">
         <label htmlFor="acomp-obs">Nova anotação</label>
-        <textarea id="acomp-obs" name="obs" rows={2} placeholder="Ex.: cliente pediu revisão do cronograma; retorno previsto para a próxima semana." />
+        <textarea
+          id="acomp-obs"
+          name="obs"
+          rows={2}
+          placeholder="Ex.: cliente pediu revisão do cronograma; retorno previsto para a próxima semana."
+        />
       </div>
       <div className="campo c-4">
         <label htmlFor="acomp-receber">A receber (opcional)</label>

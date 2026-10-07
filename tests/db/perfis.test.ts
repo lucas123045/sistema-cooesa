@@ -31,7 +31,12 @@ describe("perfis e papéis", () => {
   });
 
   it("admin vê todos os perfis", async () => {
-    const n = await como(db, "authenticated", admin, async (tx) => (await tx.query("select count(*)::int as n from perfis")).rows[0]);
+    const n = await como(
+      db,
+      "authenticated",
+      admin,
+      async (tx) => (await tx.query("select count(*)::int as n from perfis")).rows[0],
+    );
     expect((n as { n: number }).n).toBeGreaterThanOrEqual(3);
   });
 

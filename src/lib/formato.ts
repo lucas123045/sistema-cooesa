@@ -75,12 +75,7 @@ export function formatarValorRegistro(valor: number | null, tipo: string | null,
 
 /** Remove acentos e passa para minúsculas — mesma normalização da coluna de busca no banco. */
 export function normalizarBusca(texto: string): string {
-  return texto
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
+  return texto.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
 }
 
 /** Autor de uma alteração no histórico, legível ("sistema (postgres)" vira "Sistema (correção em lote)"). */
@@ -98,7 +93,12 @@ export function capitalizar(texto: string): string {
  * new Date() já está no dia seguinte — e na virada do ano, no ano seguinte.
  */
 export function hojeBrasil(agora: Date = new Date()): { ano: number; mes: number; dia: number; iso: string } {
-  const partes = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" })
+  const partes = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  })
     .formatToParts(agora)
     .reduce<Record<string, string>>((acc, p) => ((acc[p.type] = p.value), acc), {});
   const ano = Number(partes.year);

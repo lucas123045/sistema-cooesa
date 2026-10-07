@@ -27,7 +27,11 @@ export async function obterOuCriarCliente(
 export async function nomesClientes(supabase: SupabaseClient): Promise<{ id: number; nome: string }[]> {
   const todos: { id: number; nome: string }[] = [];
   for (let de = 0; ; de += 1000) {
-    const { data } = await supabase.from("clientes").select("id, nome").order("nome").range(de, de + 999);
+    const { data } = await supabase
+      .from("clientes")
+      .select("id, nome")
+      .order("nome")
+      .range(de, de + 999);
     const lote = (data ?? []) as { id: number; nome: string }[];
     todos.push(...lote);
     if (lote.length < 1000) break;

@@ -39,12 +39,16 @@ export default async function PaginaPendencias(props: PageProps<"/pendencias">) 
   let pendencias: Pendencia[] = [];
   let falhou = false;
   try {
-    pendencias = await lerTudo<Pendencia>((de, ate) => db.from("vw_pendencias").select("*").order("tipo").order("referencia").range(de, ate));
+    pendencias = await lerTudo<Pendencia>((de, ate) =>
+      db.from("vw_pendencias").select("*").order("tipo").order("referencia").range(de, ate),
+    );
   } catch {
     falhou = true;
   }
 
-  const grupos = ORDEM_TIPO_PENDENCIA.map((tipo) => ({ tipo, itens: pendencias.filter((p) => p.tipo === tipo) })).filter((g) => g.itens.length);
+  const grupos = ORDEM_TIPO_PENDENCIA.map((tipo) => ({ tipo, itens: pendencias.filter((p) => p.tipo === tipo) })).filter(
+    (g) => g.itens.length,
+  );
   const editor = podeEditar(sessao.papel);
   const erro = typeof q.erro === "string" ? ERROS[q.erro] : null;
 

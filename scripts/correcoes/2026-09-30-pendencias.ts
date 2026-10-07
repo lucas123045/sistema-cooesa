@@ -40,9 +40,17 @@ const ENCERRAMENTOS_CONFIRMADOS = [59, 77, 158, 173, 222, 306, 308, 324, 373, 38
 //    61 (“19.600,00/mês”), 838 (“15 milhões”) e 839 (“23,7 milhões”) ficam para decisão do dono:
 //    preenchê-los muda os totais históricos e os dois últimos são orçamentos de leilão.
 const VALORES_SEM_NUMERO: [number, string][] = [
-  [650, "“-”"], [748, "“-”"], [851, "“-”"], [899, "“-”"], [900, "“-”"], [914, "“-”"],
-  [755, "“VARIÁVEL”"], [970, "“Cancelada” escrito na coluna de valor"],
-  [221, "valores por hora (Hh)"], [231, "valores por hora (Hh)"], [247, "valores por hora (Hh)"],
+  [650, "“-”"],
+  [748, "“-”"],
+  [851, "“-”"],
+  [899, "“-”"],
+  [900, "“-”"],
+  [914, "“-”"],
+  [755, "“VARIÁVEL”"],
+  [970, "“Cancelada” escrito na coluna de valor"],
+  [221, "valores por hora (Hh)"],
+  [231, "valores por hora (Hh)"],
+  [247, "valores por hora (Hh)"],
   [291, "percentual da produção (25%)"],
 ];
 
@@ -59,9 +67,17 @@ const UNIFICAR: [string, string, string][] = [
 ];
 // Pares com nomes parecidos mas empresas diferentes (contatos, áreas e épocas distintas).
 const CLIENTES_DIFERENTES: [string, string][] = [
-  ["GE", "GEOCOMPANY"], ["GE", "GEVISA"], ["GE", "GEOTEL"], ["GE", "GEOLT"], ["GE", "GENPRO"],
-  ["COP", "COPRO"], ["STE", "STERLITE / THREE AR"], ["TEM", "TEMAT"], ["MAP", "MAPAL"],
-  ["CPFL", "CPFL RENOVÁVEIS"], ["CPFL", "CPFL JAGUARIÚNA"],
+  ["GE", "GEOCOMPANY"],
+  ["GE", "GEVISA"],
+  ["GE", "GEOTEL"],
+  ["GE", "GEOLT"],
+  ["GE", "GENPRO"],
+  ["COP", "COPRO"],
+  ["STE", "STERLITE / THREE AR"],
+  ["TEM", "TEMAT"],
+  ["MAP", "MAPAL"],
+  ["CPFL", "CPFL RENOVÁVEIS"],
+  ["CPFL", "CPFL JAGUARIÚNA"],
 ];
 
 // 6. Acompanhamentos antigos: vínculo por escopo idêntico/equivalente ou valor a receber igual ao já vinculado.
@@ -82,15 +98,53 @@ const ACOMPANHAMENTOS: [number, number, string][] = [
 // 7. Notas com empresa não cadastrada: cliente pelo título da NF (e registro quando a série já estava vinculada na planilha).
 //    Engekraft Radani (2 notas, “SE Bandeirantes”) e as 7 notas sem empresa/data ficam para revisão humana.
 const NOTAS: { id: number; cliente: string; registro?: number; evidencia: string }[] = [
-  ...[102, 103, 104, 105, 106].map((id) => ({ id, cliente: "TSEA / THREE AR", registro: 925, evidencia: "série “BMS - Itamaracá - Lote 11”; a BMS 01 (nota 108) já estava ligada ao 925 na planilha" })),
-  ...[110, 112].map((id) => ({ id, cliente: "TSEA / THREE AR", registro: 896, evidencia: "série “Básico Jandaíra”; a BMS 03 (nota 107) já estava ligada ao 896 na planilha" })),
-  { id: 113, cliente: "TSEA / THREE AR", registro: 873, evidencia: "“LT Itamaracá”; a BMS 03 - LT Itamaracá (nota 109) já estava ligada ao 873" },
-  ...[107, 108, 109, 111].map((id) => ({ id, cliente: "TSEA / THREE AR", evidencia: "título “COOESA-TSEA”; único cliente TSEA cadastrado" })),
-  ...[114, 115, 116].map((id) => ({ id, cliente: "BRZ EXPERTS", evidencia: "título “BRZ-Cooesa”; único cliente BRZ cadastrado" })),
-  { id: 117, cliente: "ZX", registro: 938, evidencia: "“2ª Parcela Projetos Básicos” = registro 938 (Projetos Básicos das CGH, ZX)" },
+  ...[102, 103, 104, 105, 106].map((id) => ({
+    id,
+    cliente: "TSEA / THREE AR",
+    registro: 925,
+    evidencia: "série “BMS - Itamaracá - Lote 11”; a BMS 01 (nota 108) já estava ligada ao 925 na planilha",
+  })),
+  ...[110, 112].map((id) => ({
+    id,
+    cliente: "TSEA / THREE AR",
+    registro: 896,
+    evidencia: "série “Básico Jandaíra”; a BMS 03 (nota 107) já estava ligada ao 896 na planilha",
+  })),
+  {
+    id: 113,
+    cliente: "TSEA / THREE AR",
+    registro: 873,
+    evidencia: "“LT Itamaracá”; a BMS 03 - LT Itamaracá (nota 109) já estava ligada ao 873",
+  },
+  ...[107, 108, 109, 111].map((id) => ({
+    id,
+    cliente: "TSEA / THREE AR",
+    evidencia: "título “COOESA-TSEA”; único cliente TSEA cadastrado",
+  })),
+  ...[114, 115, 116].map((id) => ({
+    id,
+    cliente: "BRZ EXPERTS",
+    evidencia: "título “BRZ-Cooesa”; único cliente BRZ cadastrado",
+  })),
+  {
+    id: 117,
+    cliente: "ZX",
+    registro: 938,
+    evidencia: "“2ª Parcela Projetos Básicos” = registro 938 (Projetos Básicos das CGH, ZX)",
+  },
   { id: 119, cliente: "ZX", registro: 938, evidencia: "“UP-ZX 3ª Parcela Projetos Básicos” = continuação da nota 117" },
-  { id: 118, cliente: "ZX", registro: 907, evidencia: "“Hidrológicos MS QL” = registro 907 (hidrologia Monte Serrat/Quilombo, ZX)" },
-  { id: 120, cliente: "GE / THREE AR", registro: 880, evidencia: "“Suportes Padre Paraíso e João Neiva” = escopo do registro 880" },
+  {
+    id: 118,
+    cliente: "ZX",
+    registro: 907,
+    evidencia: "“Hidrológicos MS QL” = registro 907 (hidrologia Monte Serrat/Quilombo, ZX)",
+  },
+  {
+    id: 120,
+    cliente: "GE / THREE AR",
+    registro: 880,
+    evidencia: "“Suportes Padre Paraíso e João Neiva” = escopo do registro 880",
+  },
   { id: 121, cliente: "PCH SAL", registro: 969, evidencia: "“PCH do Sal - Estudos Pré” = registro 969 (Pré-viabilidade)" },
 ];
 
@@ -109,13 +163,16 @@ async function executar(descricao: string, fn: () => PromiseLike<{ error: { mess
 async function main() {
   const { data: perfis } = await db.from("perfis").select("user_id, nome");
   const autor = perfis?.[0]?.user_id ?? null; // quem autorizou (único usuário no momento)
-  const idCliente = async (nome: string) => (await db.from("clientes").select("id").eq("nome", nome).maybeSingle()).data?.id as number | undefined;
+  const idCliente = async (nome: string) =>
+    (await db.from("clientes").select("id").eq("nome", nome).maybeSingle()).data?.id as number | undefined;
   const revisar = (tipo: string, chave: string, obs: string) =>
     executar(`revisada ${tipo} ${chave}`, () =>
-      db.from("pendencias_revisadas").upsert(
-        { tipo, chave, revisado_por: autor, observacao: `${obs}. ${MOTIVO}` },
-        { onConflict: "tipo,chave", ignoreDuplicates: true },
-      ),
+      db
+        .from("pendencias_revisadas")
+        .upsert(
+          { tipo, chave, revisado_por: autor, observacao: `${obs}. ${MOTIVO}` },
+          { onConflict: "tipo,chave", ignoreDuplicates: true },
+        ),
     );
 
   for (const [num, data, ev] of DATAS_INICIO) {
@@ -123,14 +180,18 @@ async function main() {
       db.from("registros").update({ data_ini: data }, { count: "exact" }).eq("num", num).is("data_ini", null),
     );
   }
-  for (const num of ENCERRAMENTOS_CONFIRMADOS) await revisar("data_encerramento", String(num), "Abreviação do mês inequívoca; dia 1º por convenção");
+  for (const num of ENCERRAMENTOS_CONFIRMADOS)
+    await revisar("data_encerramento", String(num), "Abreviação do mês inequívoca; dia 1º por convenção");
   for (const [num, ev] of VALORES_SEM_NUMERO) await revisar("valor_texto", String(num), `Sem valor numérico único: ${ev}`);
-  for (const num of UNIFICACOES_CONFIRMADAS) await revisar("cliente_unificado", num, "Erro de digitação evidente na grafia original");
-  for (const chave of DIVERGENCIAS_CONFERIDAS) await revisar("faturamento_divergente", chave, "O sistema soma todas as notas; total digitado na planilha estava incompleto");
+  for (const num of UNIFICACOES_CONFIRMADAS)
+    await revisar("cliente_unificado", num, "Erro de digitação evidente na grafia original");
+  for (const chave of DIVERGENCIAS_CONFERIDAS)
+    await revisar("faturamento_divergente", chave, "O sistema soma todas as notas; total digitado na planilha estava incompleto");
 
   for (const [a, b] of CLIENTES_DIFERENTES) {
     const [ia, ib] = [await idCliente(a), await idCliente(b)];
-    if (ia && ib) await revisar("cliente_duplicado", `${ia}-${ib}`, `“${a}” e “${b}” são empresas diferentes (contatos e áreas distintos)`);
+    if (ia && ib)
+      await revisar("cliente_duplicado", `${ia}-${ib}`, `“${a}” e “${b}” são empresas diferentes (contatos e áreas distintos)`);
   }
 
   for (const [origem, destino, ev] of UNIFICAR) {
@@ -141,7 +202,11 @@ async function main() {
     }
     // Mesma regra da função unificar_clientes (que exige um admin logado): a grafia antiga vai para empresa_original.
     await executar(`unificar ${origem} → ${destino} (${ev}): registros sem grafia original`, () =>
-      db.from("registros").update({ cliente_id: id, empresa_original: origem }, { count: "exact" }).eq("cliente_id", io).is("empresa_original", null),
+      db
+        .from("registros")
+        .update({ cliente_id: id, empresa_original: origem }, { count: "exact" })
+        .eq("cliente_id", io)
+        .is("empresa_original", null),
     );
     await executar(`unificar ${origem} → ${destino}: demais registros`, () =>
       db.from("registros").update({ cliente_id: id }, { count: "exact" }).eq("cliente_id", io),
@@ -149,7 +214,9 @@ async function main() {
     await executar(`unificar ${origem} → ${destino}: notas`, () =>
       db.from("notas_fiscais").update({ cliente_id: id }, { count: "exact" }).eq("cliente_id", io),
     );
-    await executar(`excluir cadastro ${origem} (fica no histórico)`, () => db.from("clientes").delete({ count: "exact" }).eq("id", io));
+    await executar(`excluir cadastro ${origem} (fica no histórico)`, () =>
+      db.from("clientes").delete({ count: "exact" }).eq("id", io),
+    );
   }
 
   for (const [idAcomp, num, ev] of ACOMPANHAMENTOS) {
@@ -169,7 +236,9 @@ async function main() {
   }
 
   const { count } = await db.from("vw_pendencias").select("*", { count: "exact", head: true });
-  console.log(`\n${APLICAR ? `${alteracoes} operações aplicadas.` : "Simulação: nada foi gravado."} Pendências abertas agora: ${count}.`);
+  console.log(
+    `\n${APLICAR ? `${alteracoes} operações aplicadas.` : "Simulação: nada foi gravado."} Pendências abertas agora: ${count}.`,
+  );
 }
 
 main().catch((e) => {

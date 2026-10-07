@@ -46,13 +46,17 @@ export default async function PaginaCurriculo(props: PageProps<"/curriculo">) {
     falhou = true;
   }
 
-  const base = todos.filter((x) => (andamento || x.situacao === "Contrato encerrado") && (!de || x.ano >= de) && (!ate || x.ano <= ate));
+  const base = todos.filter(
+    (x) => (andamento || x.situacao === "Contrato encerrado") && (!de || x.ano >= de) && (!ate || x.ano <= ate),
+  );
   // Cada nível só oferece opções compatíveis com os níveis acima já escolhidos.
   const opcoes = (indice: number) => {
     const acima = NIVEIS.slice(0, indice).map(([n]) => n);
     const campo = NIVEIS[indice][0];
     const compativeis = base.filter((x) => acima.every((n) => !selecao[n] || x[n] === selecao[n]));
-    return [...new Set(compativeis.map((x) => x[campo]).filter((v): v is string => Boolean(v)))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+    return [...new Set(compativeis.map((x) => x[campo]).filter((v): v is string => Boolean(v)))].sort((a, b) =>
+      a.localeCompare(b, "pt-BR"),
+    );
   };
   const linhas = base.filter((x) => NIVEIS.every(([n]) => !selecao[n] || x[n] === selecao[n]));
 
@@ -164,14 +168,18 @@ export default async function PaginaCurriculo(props: PageProps<"/curriculo">) {
               <tbody>
                 {linhas.map((x) => (
                   <tr key={x.num}>
-                    <td data-label="Ano" className="c-topo tabular">{x.ano}</td>
+                    <td data-label="Ano" className="c-topo tabular">
+                      {x.ano}
+                    </td>
                     <td className="c-principal celula-escopo">
                       <Link href={`/registros/${x.num}`} style={{ color: "var(--texto)", fontWeight: 500 }}>
                         {x.cliente}
                       </Link>
                       <span className="sub">{x.escopo ?? "—"}</span>
                     </td>
-                    <td data-label="Classificação" className="c-largo pequeno texto-2">{[x.setor, x.area, x.empreendimento, x.servico, x.especialidade].filter(Boolean).join(" › ") || "—"}</td>
+                    <td data-label="Classificação" className="c-largo pequeno texto-2">
+                      {[x.setor, x.area, x.empreendimento, x.servico, x.especialidade].filter(Boolean).join(" › ") || "—"}
+                    </td>
                     <td data-label="Período" className="tabular pequeno">
                       {x.data_ini ? formatarData(x.data_ini) : "—"}
                       {x.data_enc ? ` a ${formatarData(x.data_enc)}` : ""}
@@ -179,7 +187,11 @@ export default async function PaginaCurriculo(props: PageProps<"/curriculo">) {
                     <td className="c-topo-dir nao-imprimir">
                       <SeloSituacao situacao={x.situacao} />
                     </td>
-                    {valores ? <td data-label="Valor" className="num">{x.valor === null ? "—" : formatarValorRegistro(Number(x.valor), x.tipo)}</td> : null}
+                    {valores ? (
+                      <td data-label="Valor" className="num">
+                        {x.valor === null ? "—" : formatarValorRegistro(Number(x.valor), x.tipo)}
+                      </td>
+                    ) : null}
                   </tr>
                 ))}
               </tbody>

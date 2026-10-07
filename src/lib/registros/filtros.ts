@@ -93,9 +93,7 @@ export function paraURL(f: FiltrosRegistros, mudar: Partial<FiltrosRegistros> = 
 }
 
 export function temFiltro(f: FiltrosRegistros): boolean {
-  return Boolean(
-    f.q || f.situacao || f.atalho || f.anoDe || f.anoAte || f.setor || f.area || f.gerente || f.entidade || f.tipo,
-  );
+  return Boolean(f.q || f.situacao || f.atalho || f.anoDe || f.anoAte || f.setor || f.area || f.gerente || f.entidade || f.tipo);
 }
 
 /** Palavras da busca, normalizadas como a coluna `busca` do banco, com curingas escapados. */

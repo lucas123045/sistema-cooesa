@@ -2,7 +2,14 @@ import { NextResponse } from "next/server";
 import { lerTudo } from "@/lib/consultas";
 import { hojeBrasil } from "@/lib/formato";
 import { eAdmin } from "@/lib/papeis";
-import { agregar, agregarPor, contratadoPorCliente, faturadoPorCliente, type NotaResultado, type RegistroResultado } from "@/lib/resultados";
+import {
+  agregar,
+  agregarPor,
+  contratadoPorCliente,
+  faturadoPorCliente,
+  type NotaResultado,
+  type RegistroResultado,
+} from "@/lib/resultados";
 import { criarClienteServidor, obterSessao } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -26,7 +33,9 @@ export async function POST() {
   const modelo = process.env.OPENAI_MODEL;
   if (!chave || !modelo) {
     return NextResponse.json(
-      { erro: "A análise por IA não está configurada: defina OPENAI_API_KEY e OPENAI_MODEL (um modelo habilitado na sua conta) no servidor." },
+      {
+        erro: "A análise por IA não está configurada: defina OPENAI_API_KEY e OPENAI_MODEL (um modelo habilitado na sua conta) no servidor.",
+      },
       { status: 503 },
     );
   }
@@ -43,9 +52,15 @@ export async function POST() {
   try {
     [registros, notas] = await Promise.all([
       lerTudo<RegistroResultado>((a, b) =>
-        db.from("vw_registros").select("num, cliente_id, cliente, situacao, contrato_total, tipo, valor, ano, area, setor, gerente").order("num").range(a, b),
+        db
+          .from("vw_registros")
+          .select("num, cliente_id, cliente, situacao, contrato_total, tipo, valor, ano, area, setor, gerente")
+          .order("num")
+          .range(a, b),
       ),
-      lerTudo<NotaResultado>((a, b) => db.from("vw_notas").select("ano, valor, data_emissao, data_credito, cliente_id, cliente").order("id").range(a, b)),
+      lerTudo<NotaResultado>((a, b) =>
+        db.from("vw_notas").select("ano, valor, data_emissao, data_credito, cliente_id, cliente").order("id").range(a, b),
+      ),
     ]);
   } catch {
     return NextResponse.json({ erro: "Não foi possível carregar os indicadores para a análise." }, { status: 500 });
@@ -79,11 +94,25 @@ export async function POST() {
       `“Contrato” = encerrado ou em andamento. ${anoAtual} é um ano PARCIAL (em andamento). ` +
       `As notas fiscais só estão registradas até ${ultimoAnoNotas}; anos posteriores têm faturado nulo por falta de registro, não por queda. ` +
       `Tributos não estão incluídos. Não há nomes de clientes nos dados.`,
-    historico: { propostas: total.propostas, contratos: total.contratos, sucesso_qtd_pct: arred(total.taxaQuantidade), sucesso_valor_p_pct: arred(total.taxaValor) },
+    historico: {
+      propostas: total.propostas,
+      contratos: total.contratos,
+      sucesso_qtd_pct: arred(total.taxaQuantidade),
+      sucesso_valor_p_pct: arred(total.taxaValor),
+    },
     ultimos_anos: Array.from({ length: 10 }, (_, i) => resumoAno(anoAtual - 9 + i)),
-    por_area: agregarPor(registros.filter((r) => r.ano >= anoAtual - 9), (r) => r.area)
+    por_area: agregarPor(
+      registros.filter((r) => r.ano >= anoAtual - 9),
+      (r) => r.area,
+    )
       .filter((x) => x.dados.propostas >= 5)
-      .map((x) => ({ area: x.chave, propostas: x.dados.propostas, contratos: x.dados.contratos, sucesso_qtd_pct: arred(x.dados.taxaQuantidade), contratado_p: x.dados.contratadoP })),
+      .map((x) => ({
+        area: x.chave,
+        propostas: x.dados.propostas,
+        contratos: x.dados.contratos,
+        sucesso_qtd_pct: arred(x.dados.taxaQuantidade),
+        contratado_p: x.dados.contratadoP,
+      })),
     concentracao: {
       carteira_top5_pct: arred(carteira.top5),
       carteira_top10_pct: arred(carteira.top10),
@@ -112,7 +141,12 @@ export async function POST() {
     if (!resposta.ok) {
       console.error("Serviço de IA retornou status", resposta.status);
       return NextResponse.json(
-        { erro: resposta.status === 404 || resposta.status === 400 ? `O modelo “${modelo}” não foi aceito. Confira OPENAI_MODEL.` : "O serviço de IA não concluiu a análise. Tente mais tarde." },
+        {
+          erro:
+            resposta.status === 404 || resposta.status === 400
+              ? `O modelo “${modelo}” não foi aceito. Confira OPENAI_MODEL.`
+              : "O serviço de IA não concluiu a análise. Tente mais tarde.",
+        },
         { status: 502 },
       );
     }
@@ -130,12 +164,16 @@ export async function POST() {
   if (!texto) return NextResponse.json({ erro: "O serviço de IA retornou uma resposta vazia." }, { status: 502 });
 
   const analise = { texto, gerado_em: new Date().toISOString(), gerado_por: sessao.nome, modelo };
-  const { error } = await db
-    .from("configuracoes")
-    .upsert(
-      { chave: "ia_resultados", valor: analise, descricao: "Última análise de Resultados gerada por IA", atualizado_por: sessao.userId, atualizado_em: analise.gerado_em },
-      { onConflict: "chave" },
-    );
+  const { error } = await db.from("configuracoes").upsert(
+    {
+      chave: "ia_resultados",
+      valor: analise,
+      descricao: "Última análise de Resultados gerada por IA",
+      atualizado_por: sessao.userId,
+      atualizado_em: analise.gerado_em,
+    },
+    { onConflict: "chave" },
+  );
   if (error) console.error("Análise gerada, mas não foi salva:", error.code);
   return NextResponse.json({ analise }, { headers: { "Cache-Control": "no-store" } });
 }

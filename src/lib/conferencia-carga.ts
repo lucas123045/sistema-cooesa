@@ -92,7 +92,12 @@ export function conferirCarga(d: DadosConferencia): ItemConferencia[] {
 
   inteiro("Contratos totais (encerrados + em andamento)", ESPERADO.contratosTotais, d.resumo.contratos_totais);
   const pctObtido = `${pct.format(Number(d.resumo.pct_sucesso))}%`;
-  itens.push({ item: "% de sucesso das cotações", esperado: ESPERADO.pctSucesso, obtido: pctObtido, ok: pctObtido === ESPERADO.pctSucesso });
+  itens.push({
+    item: "% de sucesso das cotações",
+    esperado: ESPERADO.pctSucesso,
+    obtido: pctObtido,
+    ok: pctObtido === ESPERADO.pctSucesso,
+  });
   inteiro("Clientes distintos", ESPERADO.clientesDistintos, d.resumo.clientes_distintos);
   inteiro("Clientes que contrataram", ESPERADO.clientesContrataram, d.resumo.clientes_contrataram);
   inteiro("Registros tipo P", ESPERADO.tipoP, d.resumo.tipo_p);
@@ -120,8 +125,7 @@ export function formatarConferencia(itens: ItemConferencia[]): string {
   const l1 = Math.max(...itens.map((i) => i.item.length), 4);
   const l2 = Math.max(...itens.map((i) => i.esperado.length), 8);
   const l3 = Math.max(...itens.map((i) => i.obtido.length), 6);
-  const linha = (a: string, b: string, c: string, d: string) =>
-    `${a.padEnd(l1)}  ${b.padStart(l2)}  ${c.padStart(l3)}  ${d}`;
+  const linha = (a: string, b: string, c: string, d: string) => `${a.padEnd(l1)}  ${b.padStart(l2)}  ${c.padStart(l3)}  ${d}`;
   return [
     linha("Item", "Esperado", "Obtido", "Resultado"),
     "-".repeat(l1 + l2 + l3 + 16),

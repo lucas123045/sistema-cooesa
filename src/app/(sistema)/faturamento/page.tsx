@@ -10,7 +10,13 @@ import type { FaturamentoMensal, NotaFiscal } from "@/lib/tipos";
 
 export const metadata: Metadata = { title: "Faturamento" };
 
-type Anual = { ano: number; quantidade: number; total: number | string; a_receber_quantidade: number; a_receber_valor: number | string };
+type Anual = {
+  ano: number;
+  quantidade: number;
+  total: number | string;
+  a_receber_quantidade: number;
+  a_receber_valor: number | string;
+};
 
 const IMPOSTOS = [
   ["irpj", "IRPJ"],
@@ -99,8 +105,16 @@ export default async function PaginaFaturamento(props: PageProps<"/faturamento">
         <div className="indicadores">
           <Indicador rotulo={`Faturado em ${ano}`} valor={formatarMoeda(total)} />
           <Indicador rotulo="Notas emitidas" valor={formatarInteiro(quantidade)} />
-          <Indicador rotulo="Média mensal" valor={formatarMoeda(total / mesesDecorridos)} detalhe={`sobre ${mesesDecorridos} meses`} />
-          <Indicador rotulo="Tributos estimados" valor={formatarMoeda(tributos)} detalhe={total ? `${((tributos / total) * 100).toFixed(1).replace(".", ",")}% do faturado` : undefined} />
+          <Indicador
+            rotulo="Média mensal"
+            valor={formatarMoeda(total / mesesDecorridos)}
+            detalhe={`sobre ${mesesDecorridos} meses`}
+          />
+          <Indicador
+            rotulo="Tributos estimados"
+            valor={formatarMoeda(tributos)}
+            detalhe={total ? `${((tributos / total) * 100).toFixed(1).replace(".", ",")}% do faturado` : undefined}
+          />
         </div>
 
         <div className="grade grade-2">
@@ -208,10 +222,18 @@ export default async function PaginaFaturamento(props: PageProps<"/faturamento">
                   {listaNotas.map((n) => (
                     <tr key={n.id} className={n.a_receber ? "linha-alerta" : undefined}>
                       <td data-label="NF" className="c-topo tabular">
-                        {editor ? <Link href={`/faturamento/notas/${n.id}/editar`}>{n.numero || "s/nº"}</Link> : n.numero || "s/nº"}
+                        {editor ? (
+                          <Link href={`/faturamento/notas/${n.id}/editar`}>{n.numero || "s/nº"}</Link>
+                        ) : (
+                          n.numero || "s/nº"
+                        )}
                       </td>
-                      <td data-label="Emissão" className="tabular">{n.data_emissao ? formatarData(n.data_emissao) : <span className="selo selo-alerta">sem data</span>}</td>
-                      <td data-label="Crédito" className="tabular">{n.data_credito ? formatarData(n.data_credito) : <span className="selo selo-alerta">a receber</span>}</td>
+                      <td data-label="Emissão" className="tabular">
+                        {n.data_emissao ? formatarData(n.data_emissao) : <span className="selo selo-alerta">sem data</span>}
+                      </td>
+                      <td data-label="Crédito" className="tabular">
+                        {n.data_credito ? formatarData(n.data_credito) : <span className="selo selo-alerta">a receber</span>}
+                      </td>
                       <td className="c-principal">
                         {n.cliente_id ? (
                           <Link href={`/clientes/${n.cliente_id}`}>{n.cliente}</Link>
@@ -219,9 +241,15 @@ export default async function PaginaFaturamento(props: PageProps<"/faturamento">
                           <span className="muted">{n.empresa_texto ?? "—"}</span>
                         )}
                       </td>
-                      <td data-label="Título" className="c-largo celula-escopo">{n.titulo ?? "—"}</td>
-                      <td data-label="Registro">{n.registro_num ? <Link href={`/registros/${n.registro_num}`}>Nº {n.registro_num}</Link> : "—"}</td>
-                      <td data-label="Valor" className="num">{formatarMoeda(Number(n.valor))}</td>
+                      <td data-label="Título" className="c-largo celula-escopo">
+                        {n.titulo ?? "—"}
+                      </td>
+                      <td data-label="Registro">
+                        {n.registro_num ? <Link href={`/registros/${n.registro_num}`}>Nº {n.registro_num}</Link> : "—"}
+                      </td>
+                      <td data-label="Valor" className="num">
+                        {formatarMoeda(Number(n.valor))}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

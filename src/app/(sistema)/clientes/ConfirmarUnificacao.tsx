@@ -18,7 +18,8 @@ export function ConfirmarUnificacao({ origem, destino, trocarHref, cancelarHref 
     <section className="aviso aviso-alerta">
       <h2 style={{ marginBottom: 8 }}>Prévia da unificação</h2>
       <p>
-        Fica o nome <strong>“{destino.nome}”</strong>. O cadastro <strong>“{origem.nome}”</strong> deixa de existir e passa para ele:
+        Fica o nome <strong>“{destino.nome}”</strong>. O cadastro <strong>“{origem.nome}”</strong> deixa de existir e passa para
+        ele:
       </p>
       <ul style={{ margin: "0 0 10px", paddingLeft: 18 }}>
         <li>

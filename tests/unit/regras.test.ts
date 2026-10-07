@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  contarContratosTotais,
-  grupoDe,
-  percentualSucesso,
-  SITUACOES,
-  somarPorTipo,
-} from "@/lib/situacoes";
+import { contarContratosTotais, grupoDe, percentualSucesso, SITUACOES, somarPorTipo } from "@/lib/situacoes";
 import { formatarData, formatarMoeda, formatarPercentual, formatarValorRegistro, normalizarBusca } from "@/lib/formato";
 import { conferirCarga, ESPERADO } from "@/lib/conferencia-carga";
 
@@ -76,8 +70,15 @@ describe("conferência da carga", () => {
         valor_contratado_p: ESPERADO.contratadoP,
         valor_contratado_t_mensal: ESPERADO.contratadoT,
       },
-      situacoes: Object.entries(ESPERADO.situacoes).map(([s, q]) => ({ situacao: s === "(sem situação)" ? null : s, quantidade: q })),
-      faturamentoAnual: Object.entries(ESPERADO.notasPorAno).map(([ano, total], i) => ({ ano: Number(ano), total, quantidade: i === 0 ? 121 : 0 })),
+      situacoes: Object.entries(ESPERADO.situacoes).map(([s, q]) => ({
+        situacao: s === "(sem situação)" ? null : s,
+        quantidade: q,
+      })),
+      faturamentoAnual: Object.entries(ESPERADO.notasPorAno).map(([ano, total], i) => ({
+        ano: Number(ano),
+        total,
+        quantidade: i === 0 ? 121 : 0,
+      })),
       acompanhamentos: { vinculados: 68, nao_vinculados: 12 },
     });
     const divergentes = itens.filter((i) => !i.ok).map((i) => i.item);

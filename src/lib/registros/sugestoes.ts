@@ -23,8 +23,14 @@ export async function carregarSugestoes(supabase: SupabaseClient): Promise<Suges
     lerTudo<{ nivel: keyof Sugestoes; valor: string; usos: number }>((de, ate) =>
       supabase.from("vw_valores_classificacao").select("nivel, valor, usos").order("usos", { ascending: false }).range(de, ate),
     ),
-    lerTudo<{ setor: string; area: string | null; empreendimentos: string | null; servicos: string | null; especialidades: string | null }>(
-      (de, ate) => supabase.from("taxonomia").select("setor, area, empreendimentos, servicos, especialidades").order("ordem").range(de, ate),
+    lerTudo<{
+      setor: string;
+      area: string | null;
+      empreendimentos: string | null;
+      servicos: string | null;
+      especialidades: string | null;
+    }>((de, ate) =>
+      supabase.from("taxonomia").select("setor, area, empreendimentos, servicos, especialidades").order("ordem").range(de, ate),
     ),
   ]);
 

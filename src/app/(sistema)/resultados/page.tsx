@@ -87,7 +87,9 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
   const total = agregar(noPeriodo);
   const anos = Array.from({ length: ate - de + 1 }, (_, i) => de + i);
   const porAno = anos.map((ano) => ({ ano, dados: agregar(noPeriodo.filter((r) => r.ano === ano)) }));
-  const porArea = agregarPor(noPeriodo, (r) => r.area).sort((a, b) => b.dados.contratos - a.dados.contratos || b.dados.propostas - a.dados.propostas);
+  const porArea = agregarPor(noPeriodo, (r) => r.area).sort(
+    (a, b) => b.dados.contratos - a.dados.contratos || b.dados.propostas - a.dados.propostas,
+  );
   const porSetor = agregarPor(noPeriodo, (r) => r.setor).sort((a, b) => b.dados.contratos - a.dados.contratos);
   const porGerente = agregarPor(noPeriodo, (r) => r.gerente, "Não informado")
     .sort((a, b) => b.dados.propostas - a.dados.propostas)
@@ -97,7 +99,9 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
   const creditos = situacaoCreditos(notasPeriodo);
   const tributosPorAno = new Map((fatAnual ?? []).map((f: FaturamentoAno) => [f.ano, Number(f.tributos_total)]));
   const anosNotas = [...new Set(notasPeriodo.map((n) => n.ano))].sort();
-  const faturadoPorAno = anosNotas.map((ano) => notasPeriodo.filter((n) => n.ano === ano).reduce((s, n) => s + Number(n.valor), 0));
+  const faturadoPorAno = anosNotas.map((ano) =>
+    notasPeriodo.filter((n) => n.ano === ano).reduce((s, n) => s + Number(n.valor), 0),
+  );
 
   const grupos = new Map<string, number>();
   for (const r of noPeriodo) {
@@ -137,7 +141,12 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
             </div>
             <nav className="atalhos busca" aria-label="Períodos prontos">
               {presets.map((p) => (
-                <Link key={p.rotulo} className="atalho" href={`/resultados?de=${p.de}&ate=${p.ate}`} aria-pressed={p.de === de && p.ate === ate}>
+                <Link
+                  key={p.rotulo}
+                  className="atalho"
+                  href={`/resultados?de=${p.de}&ate=${p.ate}`}
+                  aria-pressed={p.de === de && p.ate === ate}
+                >
                   {p.rotulo}
                 </Link>
               ))}
@@ -148,30 +157,47 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
         {falhou ? <p className="aviso aviso-erro">Não foi possível carregar os dados. Recarregue a página.</p> : null}
         {ate > ultimoAnoNotas && ultimoAnoNotas > 0 ? (
           <p className="aviso aviso-alerta">
-            As notas fiscais estão registradas até {ultimoAnoNotas}. Faturamento de {ultimoAnoNotas + 1} em diante aparece zerado até as notas
-            serem cadastradas em Faturamento.
+            As notas fiscais estão registradas até {ultimoAnoNotas}. Faturamento de {ultimoAnoNotas + 1} em diante aparece zerado
+            até as notas serem cadastradas em Faturamento.
           </p>
         ) : null}
 
         <div className="indicadores">
-          <Indicador rotulo={`Propostas · ${periodoTexto}`} valor={formatarInteiro(total.propostas)} detalhe={`${formatarInteiro(total.contratos)} viraram contrato`} />
-          <Indicador rotulo="Sucesso por quantidade" valor={formatarPercentual(total.taxaQuantidade)} detalhe="contratos ÷ propostas" />
+          <Indicador
+            rotulo={`Propostas · ${periodoTexto}`}
+            valor={formatarInteiro(total.propostas)}
+            detalhe={`${formatarInteiro(total.contratos)} viraram contrato`}
+          />
+          <Indicador
+            rotulo="Sucesso por quantidade"
+            valor={formatarPercentual(total.taxaQuantidade)}
+            detalhe="contratos ÷ propostas"
+          />
           <Indicador
             rotulo="Sucesso por valor (P)"
             valor={formatarPercentual(total.taxaValor)}
             detalhe="R$ contratado ÷ R$ proposto"
             destaque={total.taxaValor !== null && total.taxaQuantidade !== null && total.taxaValor < total.taxaQuantidade / 2}
           />
-          <Indicador rotulo="Contratado (P)" {...moeda(total.contratadoP)} detalhe={`de ${moeda(total.propostoP).valor} propostos`} />
-          <Indicador rotulo="Ticket médio contratado (P)" {...moeda(total.ticketContratadoP)} detalhe={`proposto: ${moeda(total.ticketPropostoP).valor}`} />
+          <Indicador
+            rotulo="Contratado (P)"
+            {...moeda(total.contratadoP)}
+            detalhe={`de ${moeda(total.propostoP).valor} propostos`}
+          />
+          <Indicador
+            rotulo="Ticket médio contratado (P)"
+            {...moeda(total.ticketContratadoP)}
+            detalhe={`proposto: ${moeda(total.ticketPropostoP).valor}`}
+          />
           <Indicador rotulo="Faturado (notas)" {...moeda(creditos.total)} detalhe={`${notasPeriodo.length} notas no período`} />
         </div>
 
         {total.taxaValor !== null && total.taxaQuantidade !== null && total.taxaValor < total.taxaQuantidade / 2 ? (
           <p className="aviso">
-            <strong>Leitura rápida:</strong> no período, a Cooesa fecha {formatarPercentual(total.taxaQuantidade)} das propostas, mas só{" "}
-            {formatarPercentual(total.taxaValor)} do valor proposto. Ganha com mais frequência as propostas menores: o ticket contratado (
-            {moeda(total.ticketContratadoP).valor}) é bem menor que o proposto ({moeda(total.ticketPropostoP).valor}).
+            <strong>Leitura rápida:</strong> no período, a Cooesa fecha {formatarPercentual(total.taxaQuantidade)} das propostas,
+            mas só {formatarPercentual(total.taxaValor)} do valor proposto. Ganha com mais frequência as propostas menores: o
+            ticket contratado ({moeda(total.ticketContratadoP).valor}) é bem menor que o proposto (
+            {moeda(total.ticketPropostoP).valor}).
           </p>
         ) : null}
 
@@ -195,11 +221,28 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
               <tbody>
                 <LinhaComparativo rotulo="Propostas" a={antes.propostas} b={ref.propostas} fmt={formatarInteiro} />
                 <LinhaComparativo rotulo="Contratos" a={antes.contratos} b={ref.contratos} fmt={formatarInteiro} />
-                <LinhaComparativo rotulo="Sucesso por quantidade" a={antes.taxaQuantidade} b={ref.taxaQuantidade} fmt={formatarPercentual} pontos />
-                <LinhaComparativo rotulo="Sucesso por valor (P)" a={antes.taxaValor} b={ref.taxaValor} fmt={formatarPercentual} pontos />
+                <LinhaComparativo
+                  rotulo="Sucesso por quantidade"
+                  a={antes.taxaQuantidade}
+                  b={ref.taxaQuantidade}
+                  fmt={formatarPercentual}
+                  pontos
+                />
+                <LinhaComparativo
+                  rotulo="Sucesso por valor (P)"
+                  a={antes.taxaValor}
+                  b={ref.taxaValor}
+                  fmt={formatarPercentual}
+                  pontos
+                />
                 <LinhaComparativo rotulo="Valor proposto (P)" a={antes.propostoP} b={ref.propostoP} fmt={formatarMoeda} />
                 <LinhaComparativo rotulo="Valor contratado (P)" a={antes.contratadoP} b={ref.contratadoP} fmt={formatarMoeda} />
-                <LinhaComparativo rotulo="Ticket médio contratado (P)" a={antes.ticketContratadoP} b={ref.ticketContratadoP} fmt={formatarMoeda} />
+                <LinhaComparativo
+                  rotulo="Ticket médio contratado (P)"
+                  a={antes.ticketContratadoP}
+                  b={ref.ticketContratadoP}
+                  fmt={formatarMoeda}
+                />
                 <LinhaComparativo
                   rotulo="Faturado (notas)"
                   a={anoRef - 1 <= ultimoAnoNotas ? faturadoAno(anoRef - 1) : null}
@@ -261,7 +304,10 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
             rotuloChave="Área"
             linhas={porArea.map((a) => ({
               ...a,
-              href: a.chave === "Sem classificação" ? undefined : `/registros?area=${encodeURIComponent(String(a.chave))}&de=${de}&ate=${ate}`,
+              href:
+                a.chave === "Sem classificação"
+                  ? undefined
+                  : `/registros?area=${encodeURIComponent(String(a.chave))}&de=${de}&ate=${ate}`,
             }))}
           />
         </section>
@@ -283,19 +329,22 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
               rotuloChave="Gerente"
               linhas={porGerente.map((g) => ({
                 ...g,
-                href: g.chave === "Não informado" ? undefined : `/registros?gerente=${encodeURIComponent(String(g.chave))}&de=${de}&ate=${ate}`,
+                href:
+                  g.chave === "Não informado"
+                    ? undefined
+                    : `/registros?gerente=${encodeURIComponent(String(g.chave))}&de=${de}&ate=${ate}`,
               }))}
             />
           </section>
         </div>
 
         <div className="grade grade-2">
+          <Concentracao titulo="Concentração da carteira contratada" nota="Valor contratado (P) por cliente" dados={carteira} />
           <Concentracao
-            titulo="Concentração da carteira contratada"
-            nota="Valor contratado (P) por cliente"
-            dados={carteira}
+            titulo="Concentração do faturamento"
+            nota="Notas ligadas a clientes cadastrados"
+            dados={faturamentoClientes}
           />
-          <Concentracao titulo="Concentração do faturamento" nota="Notas ligadas a clientes cadastrados" dados={faturamentoClientes} />
         </div>
 
         <div className="grade grade-2">
@@ -356,7 +405,9 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
         <section className="painel">
           <div className="painel-cabecalho">
             <h2>Carteira por situação</h2>
-            <span className="nota">{formatarInteiro(noPeriodo.length)} registros · {periodoTexto}</span>
+            <span className="nota">
+              {formatarInteiro(noPeriodo.length)} registros · {periodoTexto}
+            </span>
           </div>
           <div className="painel-corpo">
             <ul className="barras-h barras-situacao">
@@ -366,10 +417,14 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
                   <li key={g}>
                     <span className="rotulo-barra">{g === "sem" ? "Sem situação" : ROTULO_GRUPO[g]}</span>
                     <div className="trilho">
-                      <div className={`preenchido sit-${g}`} style={{ width: `${(qtd / Math.max(1, noPeriodo.length)) * 100}%` }} />
+                      <div
+                        className={`preenchido sit-${g}`}
+                        style={{ width: `${(qtd / Math.max(1, noPeriodo.length)) * 100}%` }}
+                      />
                     </div>
                     <span className="num">
-                      {formatarInteiro(qtd)} <span className="muted">· {formatarPercentual((qtd / Math.max(1, noPeriodo.length)) * 100)}</span>
+                      {formatarInteiro(qtd)}{" "}
+                      <span className="muted">· {formatarPercentual((qtd / Math.max(1, noPeriodo.length)) * 100)}</span>
                     </span>
                   </li>
                 );
@@ -391,8 +446,8 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
         ) : null}
 
         <p className="pequeno muted">
-          Regras: contrato = encerrado + em andamento (litígio não conta). Valores em R$ usam só propostas tipo P (valor total); tipo T é
-          mensal e aparece à parte no Painel e nos Clientes. Dados atualizados em {formatarData(hojeBrasil().iso)}
+          Regras: contrato = encerrado + em andamento (litígio não conta). Valores em R$ usam só propostas tipo P (valor total);
+          tipo T é mensal e aparece à parte no Painel e nos Clientes. Dados atualizados em {formatarData(hojeBrasil().iso)}
           {analise ? ` · última análise por IA em ${formatarDataHora(analise.gerado_em)}` : ""}.
         </p>
       </div>
@@ -400,7 +455,13 @@ export default async function PaginaResultados(props: PageProps<"/resultados">) 
   );
 }
 
-function LinhaComparativo(props: { rotulo: string; a: number | null; b: number | null; fmt: (v: number | null) => string; pontos?: boolean }) {
+function LinhaComparativo(props: {
+  rotulo: string;
+  a: number | null;
+  b: number | null;
+  fmt: (v: number | null) => string;
+  pontos?: boolean;
+}) {
   return (
     <tr>
       <td>{props.rotulo}</td>
@@ -437,7 +498,11 @@ function Concentracao({ titulo, nota, dados }: { titulo: string; nota: string; d
           <div className="indicadores indicadores-embutidos">
             <Indicador rotulo="5 maiores clientes" valor={formatarPercentual(dados.top5)} detalhe="do total" />
             <Indicador rotulo="10 maiores clientes" valor={formatarPercentual(dados.top10)} detalhe="do total" />
-            <Indicador rotulo="Clientes com valor" valor={formatarInteiro(dados.ranking.length)} detalhe={formatarMoeda(dados.total)} />
+            <Indicador
+              rotulo="Clientes com valor"
+              valor={formatarInteiro(dados.ranking.length)}
+              detalhe={formatarMoeda(dados.total)}
+            />
           </div>
           <div className="tabela-rolagem">
             <table className="tabela compacta">

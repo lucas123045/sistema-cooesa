@@ -12,7 +12,11 @@
     "test:watch": "vitest",
     "seed": "tsx --env-file=.env.local scripts/seed.ts",
     "criar-admin": "tsx --env-file=.env.local scripts/criar-admin.ts",
-    "conferir": "tsx --env-file=.env.local scripts/seed.ts --so-conferir"
+    "conferir": "tsx --env-file=.env.local scripts/seed.ts --so-conferir",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "e2e": "playwright test",
+    "tipos": "supabase gen types typescript --linked > src/lib/database.types.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -27,11 +31,13 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@electric-sql/pglite-socket": "^0.2.11",
+    "@playwright/test": "^1.63.0",
     "@types/node": "^24.19.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
+    "prettier": "^3.9.9",
     "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^5.0.3"

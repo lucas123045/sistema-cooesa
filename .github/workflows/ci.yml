@@ -1,0 +1,42 @@
+# Verificação automática a cada push e pull request: formatação, lint, tipos, testes e build.
+# Os testes de banco usam PGlite (Postgres em memória) — não precisam de Supabase nem de segredos.
+name: Verificação
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Valores fictícios só para o build compilar; nenhuma chamada real é feita.
+      NEXT_PUBLIC_SUPABASE_URL: https://exemplo.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: chave-ficticia-do-ci
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Formatação
+        run: npm run format:check
+      - name: Lint
+        run: npm run lint
+      - name: Tipos
+        run: npx next typegen && npm run typecheck
+      - name: Testes
+        run: npm test
+      - name: Build
+        run: npm run build

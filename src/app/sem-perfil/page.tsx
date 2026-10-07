@@ -9,8 +9,8 @@ export default function PaginaSemPerfil() {
     <LayoutAcesso>
       <h1>Conta sem perfil de acesso</h1>
       <p className="texto-2">
-        Sua conta existe, mas ainda não tem um papel (leitura, editor ou administrador). Peça ao administrador do
-        sistema para definir o seu papel em Configurações → Usuários.
+        Sua conta existe, mas ainda não tem um papel (leitura, editor ou administrador). Peça ao administrador do sistema para
+        definir o seu papel em Configurações → Usuários.
       </p>
       <form action={sair}>
         <button className="btn" type="submit">

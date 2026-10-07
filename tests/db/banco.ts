@@ -43,9 +43,7 @@ export async function como<T>(
   let erro: unknown;
   try {
     await db.transaction(async (tx) => {
-      await tx.query("select set_config('request.jwt.claims', $1, true)", [
-        JSON.stringify({ sub, role: papel, aal }),
-      ]);
+      await tx.query("select set_config('request.jwt.claims', $1, true)", [JSON.stringify({ sub, role: papel, aal })]);
       await tx.exec(`set local role ${papel}`);
       resultado = await fn(tx);
       if (!manter) throw new DesfazerTransacao();
@@ -61,10 +59,10 @@ class DesfazerTransacao extends Error {}
 
 /** Cria um usuário no auth.users (dispara a criação do perfil) e define o papel. */
 export async function criarUsuario(db: PGlite, email: string, papel: "admin" | "editor" | "leitura" | null) {
-  const r = await db.query<{ id: string }>(
-    "insert into auth.users (email, raw_app_meta_data) values ($1, $2) returning id",
-    [email, JSON.stringify(papel ? { papel } : {})],
-  );
+  const r = await db.query<{ id: string }>("insert into auth.users (email, raw_app_meta_data) values ($1, $2) returning id", [
+    email,
+    JSON.stringify(papel ? { papel } : {}),
+  ]);
   const id = r.rows[0].id;
   if (papel === null) await db.query("delete from public.perfis where user_id = $1", [id]);
   return id;

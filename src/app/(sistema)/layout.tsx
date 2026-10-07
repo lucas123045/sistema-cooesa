@@ -18,12 +18,22 @@ export default async function LayoutSistema({ children }: { children: React.Reac
           <h1 style={{ marginBottom: 12 }}>Conecte o projeto ao Supabase</h1>
           <p>O servidor iniciou, mas faltam as credenciais públicas do projeto para carregar os dados e autenticar usuários.</p>
           <ol style={{ paddingLeft: 22, lineHeight: 1.8 }}>
-            <li>Copie <code>.env.example</code> para um arquivo chamado <code>.env.local</code> na raiz do projeto.</li>
-            <li>No painel Supabase, abra <strong>Project Settings → API</strong> e copie a Project URL e a chave publishable/anon.</li>
-            <li>Preencha <code>NEXT_PUBLIC_SUPABASE_URL</code> e <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> no <code>.env.local</code>.</li>
+            <li>
+              Copie <code>.env.example</code> para um arquivo chamado <code>.env.local</code> na raiz do projeto.
+            </li>
+            <li>
+              No painel Supabase, abra <strong>Project Settings → API</strong> e copie a Project URL e a chave publishable/anon.
+            </li>
+            <li>
+              Preencha <code>NEXT_PUBLIC_SUPABASE_URL</code> e <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> no{" "}
+              <code>.env.local</code>.
+            </li>
             <li>Reinicie o servidor de desenvolvimento.</li>
           </ol>
-          <p className="nota">Não coloque a chave <code>service_role</code> em variáveis com prefixo <code>NEXT_PUBLIC_</code> nem a compartilhe no navegador.</p>
+          <p className="nota">
+            Não coloque a chave <code>service_role</code> em variáveis com prefixo <code>NEXT_PUBLIC_</code> nem a compartilhe no
+            navegador.
+          </p>
         </section>
       </main>
     );

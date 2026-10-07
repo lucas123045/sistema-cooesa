@@ -25,10 +25,25 @@ export default async function Painel() {
     db.from("vw_resumo").select("*").maybeSingle(),
     db.from("vw_resumo_anual").select("*").order("ano"),
     db.from("notas_fiscais").select("valor").gte("data_emissao", haDozeMeses()),
-    db.from("notas_fiscais").select("data_emissao").not("data_emissao", "is", null).order("data_emissao", { ascending: false }).limit(1),
+    db
+      .from("notas_fiscais")
+      .select("data_emissao")
+      .not("data_emissao", "is", null)
+      .order("data_emissao", { ascending: false })
+      .limit(1),
     db.from("vw_registros").select(colunasLista).eq("situacao", "Proposta colocada").order("num", { ascending: false }).limit(6),
-    db.from("vw_registros").select(colunasLista).eq("situacao", "Contrato em andamento").order("num", { ascending: false }).limit(6),
-    db.from("vw_clientes").select("id, nome, contratos, valor_contratado_p").gt("contratos", 0).order("contratos", { ascending: false }).limit(8),
+    db
+      .from("vw_registros")
+      .select(colunasLista)
+      .eq("situacao", "Contrato em andamento")
+      .order("num", { ascending: false })
+      .limit(6),
+    db
+      .from("vw_clientes")
+      .select("id, nome, contratos, valor_contratado_p")
+      .gt("contratos", 0)
+      .order("contratos", { ascending: false })
+      .limit(8),
     db.from("vw_curriculo").select("area"),
   ]);
 
@@ -38,8 +53,7 @@ export default async function Painel() {
       <>
         <CabecalhoPagina sobre={<Link href="/">Painel de Controle</Link>} icone="painel" titulo="Visão geral" />
         <p className="aviso aviso-erro">
-          Não foi possível carregar o resumo. Confira se as migrações foram
-          aplicadas e se a carga (npm run seed) foi feita.
+          Não foi possível carregar o resumo. Confira se as migrações foram aplicadas e se a carga (npm run seed) foi feita.
         </p>
       </>
     );
@@ -65,27 +79,48 @@ export default async function Painel() {
     <>
       <CabecalhoPagina
         sobre={<Link href="/">Painel de Controle</Link>}
-        icone="painel" titulo="Visão geral"
+        icone="painel"
+        titulo="Visão geral"
         descricao={`${r.primeiro_ano ?? 2000}–${hojeBrasil().ano}: ${formatarInteiro(r.total_propostas)} propostas, ${formatarInteiro(r.contratos_totais)} contratos.`}
       />
 
       <div className="pilha">
         <div className="indicadores">
-          <Indicador rotulo="Contratos totais" valor={formatarInteiro(r.contratos_totais)} detalhe={`${r.encerrados} encerrados · ${r.em_andamento} em andamento`} />
+          <Indicador
+            rotulo="Contratos totais"
+            valor={formatarInteiro(r.contratos_totais)}
+            detalhe={`${r.encerrados} encerrados · ${r.em_andamento} em andamento`}
+          />
           <Indicador
             rotulo="Sucesso das cotações"
             valor={formatarPercentual(r.pct_sucesso === null ? null : Number(r.pct_sucesso))}
             detalhe={`contratos ÷ ${formatarInteiro(r.total_propostas)} propostas`}
           />
-          <Indicador rotulo="Em andamento" valor={formatarInteiro(r.em_andamento)} detalhe="contratos ativos" href="/registros?situacao=Contrato+em+andamento" />
-          <Indicador rotulo="Aguardando resposta" valor={formatarInteiro(r.aguardando)} detalhe="propostas colocadas" destaque={r.aguardando > 0} href="/registros?atalho=aguardando" />
+          <Indicador
+            rotulo="Em andamento"
+            valor={formatarInteiro(r.em_andamento)}
+            detalhe="contratos ativos"
+            href="/registros?situacao=Contrato+em+andamento"
+          />
+          <Indicador
+            rotulo="Aguardando resposta"
+            valor={formatarInteiro(r.aguardando)}
+            detalhe="propostas colocadas"
+            destaque={r.aguardando > 0}
+            href="/registros?atalho=aguardando"
+          />
           <Indicador
             rotulo="Faturamento 12 meses"
             valor={formatarMoeda(faturado12)}
             detalhe={dataUltimaNota ? `última nota em ${formatarData(dataUltimaNota)}` : "nenhuma nota registrada"}
             menor
           />
-          <Indicador rotulo="Em litígio" valor={formatarInteiro(r.em_litigio)} detalhe="propostas e contratos" href="/registros?atalho=litigio" />
+          <Indicador
+            rotulo="Em litígio"
+            valor={formatarInteiro(r.em_litigio)}
+            detalhe="propostas e contratos"
+            href="/registros?atalho=litigio"
+          />
         </div>
 
         <section className="painel">
@@ -122,7 +157,12 @@ export default async function Painel() {
         </section>
 
         <div className="grade grade-2">
-          <Lista titulo="Aguardando resposta" href="/registros?atalho=aguardando" linhas={(aguardando.data ?? []) as LinhaLista[]} vazio="Nenhuma proposta aguardando resposta." />
+          <Lista
+            titulo="Aguardando resposta"
+            href="/registros?atalho=aguardando"
+            linhas={(aguardando.data ?? []) as LinhaLista[]}
+            vazio="Nenhuma proposta aguardando resposta."
+          />
           <Lista
             titulo="Contratos em andamento"
             href="/registros?situacao=Contrato+em+andamento"
@@ -176,7 +216,14 @@ export default async function Painel() {
   );
 }
 
-function Indicador(props: { rotulo: string; valor: string; detalhe: string; destaque?: boolean; menor?: boolean; href?: string }) {
+function Indicador(props: {
+  rotulo: string;
+  valor: string;
+  detalhe: string;
+  destaque?: boolean;
+  menor?: boolean;
+  href?: string;
+}) {
   const conteudo = (
     <>
       <div className="indicador-rotulo">{props.rotulo}</div>

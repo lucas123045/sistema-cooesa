@@ -29,11 +29,17 @@ export async function salvarAliquotas(form: FormData) {
   }
 
   const db = await criarClienteServidor();
-  const { error } = await db
-    .from("configuracoes")
-    .upsert(CHAVES.map((chave) => ({ chave, valor: valores[chave], atualizado_por: sessao.userId, atualizado_em: new Date().toISOString() })), {
+  const { error } = await db.from("configuracoes").upsert(
+    CHAVES.map((chave) => ({
+      chave,
+      valor: valores[chave],
+      atualizado_por: sessao.userId,
+      atualizado_em: new Date().toISOString(),
+    })),
+    {
       onConflict: "chave",
-    });
+    },
+  );
   if (error) redirect("/configuracoes?erro=salvar");
 
   revalidatePath("/faturamento");

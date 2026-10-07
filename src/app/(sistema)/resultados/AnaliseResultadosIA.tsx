@@ -40,8 +40,8 @@ export function AnaliseResultadosIA({ inicial, podeGerar }: { inicial: AnaliseSa
               <p key={i}>{linha}</p>
             ))}
           <p className="pequeno muted">
-            Gerado por IA ({analise.modelo}) em {formatarDataHora(analise.gerado_em)} a pedido de {analise.gerado_por}. Texto automático:
-            confira os números nas tabelas acima antes de usar.
+            Gerado por IA ({analise.modelo}) em {formatarDataHora(analise.gerado_em)} a pedido de {analise.gerado_por}. Texto
+            automático: confira os números nas tabelas acima antes de usar.
           </p>
         </div>
       ) : (

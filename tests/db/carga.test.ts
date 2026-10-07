@@ -54,9 +54,13 @@ describe("carga da planilha (critério de aceite da Fase 2)", () => {
   });
 
   it("preserva os textos originais e o Nº da planilha", async () => {
-    const r = await db.query<{ num: number; data_ini: string | null; data_ini_texto: string; valor: string | null; valor_texto: string }>(
-      "select num, data_ini, data_ini_texto, valor, valor_texto from registros where num in (407, 838) order by num",
-    );
+    const r = await db.query<{
+      num: number;
+      data_ini: string | null;
+      data_ini_texto: string;
+      valor: string | null;
+      valor_texto: string;
+    }>("select num, data_ini, data_ini_texto, valor, valor_texto from registros where num in (407, 838) order by num");
     expect(r.rows[0]).toMatchObject({ num: 407, data_ini: null, data_ini_texto: "125.04.06" });
     expect(r.rows[1]).toMatchObject({ num: 838, valor: null, valor_texto: "15 milhões" });
     const unificado = await db.query<{ empresa_original: string; nome: string }>(

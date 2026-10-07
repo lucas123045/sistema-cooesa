@@ -36,13 +36,7 @@ type Props = {
 export function Logo({ variante = "azul", titulo = "Cooesa Engenharia", className }: Props) {
   const cor = variante === "branco" ? "#ffffff" : "#3e5b7b";
   return (
-    <svg
-      viewBox={LOGO_VIEWBOX}
-      role="img"
-      aria-label={titulo}
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg viewBox={LOGO_VIEWBOX} role="img" aria-label={titulo} className={className} xmlns="http://www.w3.org/2000/svg">
       <g fill="none" stroke={cor} strokeWidth={LOGO_TRACO} strokeLinecap="butt" strokeLinejoin="round">
         {LOGO_TRACOS.map((d) => (
           <path key={d} d={d} />

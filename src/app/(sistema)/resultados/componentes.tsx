@@ -3,7 +3,13 @@ import { formatarInteiro, formatarMoeda, formatarMoedaCompacta, formatarPercentu
 import type { Agregado } from "@/lib/resultados";
 
 /** Indicador com valor compacto (R$ 18,3 mi) e o valor exato na dica. */
-export function Indicador(props: { rotulo: string; valor: string; exato?: string; detalhe?: React.ReactNode; destaque?: boolean }) {
+export function Indicador(props: {
+  rotulo: string;
+  valor: string;
+  exato?: string;
+  detalhe?: React.ReactNode;
+  destaque?: boolean;
+}) {
   return (
     <div className={`indicador${props.destaque ? " destaque" : ""}`}>
       <div className="indicador-rotulo">{props.rotulo}</div>
@@ -45,7 +51,15 @@ export function MiniBarra({ pct, classe = "serie-contratos" }: { pct: number | n
 type LinhaDesempenho = { chave: string | number; dados: Agregado; href?: string };
 
 /** Tabela de desempenho (área, setor, gerente): quantidade, taxa e valores de P. */
-export function TabelaDesempenho({ titulo, linhas, rotuloChave }: { titulo: string; linhas: LinhaDesempenho[]; rotuloChave: string }) {
+export function TabelaDesempenho({
+  titulo,
+  linhas,
+  rotuloChave,
+}: {
+  titulo: string;
+  linhas: LinhaDesempenho[];
+  rotuloChave: string;
+}) {
   return (
     <div className="tabela-rolagem">
       <table className="tabela tabela-cartoes compacta" aria-label={titulo}>
@@ -64,15 +78,25 @@ export function TabelaDesempenho({ titulo, linhas, rotuloChave }: { titulo: stri
           {linhas.map((l) => (
             <tr key={String(l.chave)}>
               <td className="c-principal">{l.href ? <Link href={l.href}>{l.chave}</Link> : l.chave}</td>
-              <td data-label="Propostas" className="num">{formatarInteiro(l.dados.propostas)}</td>
-              <td data-label="Contratos" className="num">{formatarInteiro(l.dados.contratos)}</td>
+              <td data-label="Propostas" className="num">
+                {formatarInteiro(l.dados.propostas)}
+              </td>
+              <td data-label="Contratos" className="num">
+                {formatarInteiro(l.dados.contratos)}
+              </td>
               <td data-label="Sucesso (qtd.)" className="celula-taxa">
                 <MiniBarra pct={l.dados.taxaQuantidade} />
                 <span className="tabular">{formatarPercentual(l.dados.taxaQuantidade)}</span>
               </td>
-              <td data-label="Sucesso (valor P)" className="num">{formatarPercentual(l.dados.taxaValor)}</td>
-              <td data-label="Contratado (P)" className="num">{l.dados.contratadoP ? formatarMoeda(l.dados.contratadoP) : "—"}</td>
-              <td data-label="Ticket contratado" className="num">{l.dados.ticketContratadoP === null ? "—" : formatarMoeda(l.dados.ticketContratadoP)}</td>
+              <td data-label="Sucesso (valor P)" className="num">
+                {formatarPercentual(l.dados.taxaValor)}
+              </td>
+              <td data-label="Contratado (P)" className="num">
+                {l.dados.contratadoP ? formatarMoeda(l.dados.contratadoP) : "—"}
+              </td>
+              <td data-label="Ticket contratado" className="num">
+                {l.dados.ticketContratadoP === null ? "—" : formatarMoeda(l.dados.ticketContratadoP)}
+              </td>
             </tr>
           ))}
         </tbody>

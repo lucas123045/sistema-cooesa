@@ -25,11 +25,14 @@ export function FormRegistro({ registro, clientes, sugestoes, pendencias = [] }:
   const [cliente, setCliente] = useState(registro?.cliente_nome ?? "");
   const [tipo, setTipo] = useState<string>(registro?.tipo ?? "P");
   const erro = (c: string) => estado.campos?.[c];
-  const clienteNovo =
-    cliente.trim() !== "" && !clientes.includes(cliente.trim().replace(/\s+/g, " ").toLocaleUpperCase("pt-BR"));
+  const clienteNovo = cliente.trim() !== "" && !clientes.includes(cliente.trim().replace(/\s+/g, " ").toLocaleUpperCase("pt-BR"));
   const revisaveis = pendencias.filter((p) => REVISAVEIS.includes(p.tipo));
 
-  const campoTexto = (nome: keyof Registro | "cliente", rotulo: string, props: { classe?: string; lista?: string; ajuda?: string; valor?: string | null } = {}) => (
+  const campoTexto = (
+    nome: keyof Registro | "cliente",
+    rotulo: string,
+    props: { classe?: string; lista?: string; ajuda?: string; valor?: string | null } = {},
+  ) => (
     <div className={`campo ${props.classe ?? "c-6"}`}>
       <label htmlFor={`f-${nome}`}>{rotulo}</label>
       <input
@@ -83,15 +86,20 @@ export function FormRegistro({ registro, clientes, sugestoes, pendencias = [] }:
           </datalist>
           {clienteNovo ? (
             <span className="ajuda" style={{ color: "var(--alerta-texto)" }}>
-              Cliente novo: será cadastrado como “{cliente.trim().toLocaleUpperCase("pt-BR")}”. Confira se não existe com outra grafia.
+              Cliente novo: será cadastrado como “{cliente.trim().toLocaleUpperCase("pt-BR")}”. Confira se não existe com outra
+              grafia.
             </span>
           ) : (
             <span className="ajuda">Escolha da lista para não criar grafias duplicadas.</span>
           )}
-          {registro?.empresa_original ? <span className="original">Grafia na planilha: “{registro.empresa_original}”</span> : null}
+          {registro?.empresa_original ? (
+            <span className="original">Grafia na planilha: “{registro.empresa_original}”</span>
+          ) : null}
           {erro("cliente") ? <span className="erro-campo">{erro("cliente")}</span> : null}
         </div>
-        {campoTexto("contato", "Contato no cliente", { ajuda: "Nome e telefone. Dado pessoal: visível só para usuários logados." })}
+        {campoTexto("contato", "Contato no cliente", {
+          ajuda: "Nome e telefone. Dado pessoal: visível só para usuários logados.",
+        })}
         <div className="campo c-12">
           <label htmlFor="f-escopo">Escopo</label>
           <textarea
@@ -106,7 +114,12 @@ export function FormRegistro({ registro, clientes, sugestoes, pendencias = [] }:
         {campoTexto("gerente", "Gerente de contrato (Cooesa)", { classe: "c-4", lista: "lista-gerente" })}
         <div className="campo c-4">
           <label htmlFor="f-situacao">Situação</label>
-          <select id="f-situacao" name="situacao" defaultValue={registro?.situacao ?? (registro ? "" : "Proposta colocada")} aria-invalid={erro("situacao") ? true : undefined}>
+          <select
+            id="f-situacao"
+            name="situacao"
+            defaultValue={registro?.situacao ?? (registro ? "" : "Proposta colocada")}
+            aria-invalid={erro("situacao") ? true : undefined}
+          >
             {registro && registro.situacao === null ? <option value="">— sem situação (legado) —</option> : null}
             {SITUACOES.map((s) => (
               <option key={s} value={s}>
@@ -130,13 +143,25 @@ export function FormRegistro({ registro, clientes, sugestoes, pendencias = [] }:
         <legend>Datas e valores</legend>
         <div className="campo c-3">
           <label htmlFor="f-data_ini">Início</label>
-          <input id="f-data_ini" name="data_ini" type="date" defaultValue={registro?.data_ini ?? ""} aria-invalid={erro("data_ini") ? true : undefined} />
+          <input
+            id="f-data_ini"
+            name="data_ini"
+            type="date"
+            defaultValue={registro?.data_ini ?? ""}
+            aria-invalid={erro("data_ini") ? true : undefined}
+          />
           {registro?.data_ini_texto ? <span className="original">Planilha: “{registro.data_ini_texto}”</span> : null}
           {erro("data_ini") ? <span className="erro-campo">{erro("data_ini")}</span> : null}
         </div>
         <div className="campo c-3">
           <label htmlFor="f-data_enc">Encerramento</label>
-          <input id="f-data_enc" name="data_enc" type="date" defaultValue={registro?.data_enc ?? ""} aria-invalid={erro("data_enc") ? true : undefined} />
+          <input
+            id="f-data_enc"
+            name="data_enc"
+            type="date"
+            defaultValue={registro?.data_enc ?? ""}
+            aria-invalid={erro("data_enc") ? true : undefined}
+          />
           {registro?.data_enc_texto ? (
             <span className="original">
               Planilha: “{registro.data_enc_texto}” (assumido {formatarData(registro.data_enc)})
@@ -146,14 +171,30 @@ export function FormRegistro({ registro, clientes, sugestoes, pendencias = [] }:
         </div>
         <div className="campo c-3">
           <label htmlFor="f-ano">Ano</label>
-          <input id="f-ano" name="ano" type="number" min={1990} max={2100} defaultValue={registro?.ano ?? ""} placeholder="do início" />
-          {erro("ano") ? <span className="erro-campo">{erro("ano")}</span> : <span className="ajuda">Vazio = ano do início.</span>}
+          <input
+            id="f-ano"
+            name="ano"
+            type="number"
+            min={1990}
+            max={2100}
+            defaultValue={registro?.ano ?? ""}
+            placeholder="do início"
+          />
+          {erro("ano") ? (
+            <span className="erro-campo">{erro("ano")}</span>
+          ) : (
+            <span className="ajuda">Vazio = ano do início.</span>
+          )}
         </div>
         <div className="campo c-3">
           <span className="rotulo" id="rotulo-tipo">
             Tipo
           </span>
-          <div role="radiogroup" aria-labelledby="rotulo-tipo" style={{ display: "flex", gap: 14, minHeight: 36, alignItems: "center" }}>
+          <div
+            role="radiogroup"
+            aria-labelledby="rotulo-tipo"
+            style={{ display: "flex", gap: 14, minHeight: 36, alignItems: "center" }}
+          >
             <label className="checagem">
               <input type="radio" name="tipo" value="P" checked={tipo === "P"} onChange={() => setTipo("P")} /> P — total
             </label>

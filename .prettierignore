@@ -1,0 +1,12 @@
+# Gerados, dados ou documentos que não devem ser reformatados
+node_modules
+.next
+package-lock.json
+data
+docs
+public
+supabase
+*.md
+next-env.d.ts
+playwright-report
+test-results

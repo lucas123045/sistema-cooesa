@@ -14,7 +14,15 @@ import { ConfirmarUnificacao } from "../ConfirmarUnificacao";
 
 export const metadata: Metadata = { title: "Cliente" };
 
-type LinhaRegistro = { num: number; ano: number; escopo: string | null; situacao: string | null; tipo: "P" | "T"; valor: number | string | null; valor_texto: string | null };
+type LinhaRegistro = {
+  num: number;
+  ano: number;
+  escopo: string | null;
+  situacao: string | null;
+  tipo: "P" | "T";
+  valor: number | string | null;
+  valor_texto: string | null;
+};
 
 function numeroParam(v: string | string[] | undefined): number | null {
   const n = Number(Array.isArray(v) ? v[0] : v);
@@ -33,10 +41,21 @@ export default async function PaginaCliente(props: PageProps<"/clientes/[id]">) 
   const db = await criarClienteServidor();
   const [cliente, registros, notas, historico, outro, todos] = await Promise.all([
     db.from("vw_clientes").select("*").eq("id", id).maybeSingle(),
-    db.from("vw_registros").select("num, ano, escopo, situacao, tipo, valor, valor_texto").eq("cliente_id", id).order("num", { ascending: false }),
+    db
+      .from("vw_registros")
+      .select("num, ano, escopo, situacao, tipo, valor, valor_texto")
+      .eq("cliente_id", id)
+      .order("num", { ascending: false }),
     db.from("vw_notas").select("*").eq("cliente_id", id).order("data_emissao", { ascending: false }),
-    db.from("historico_alteracoes").select("*").eq("tabela", "clientes").eq("chave", String(id)).order("quando", { ascending: false }),
-    admin && outroId && outroId !== id ? db.from("vw_clientes").select("*").eq("id", outroId).maybeSingle() : Promise.resolve({ data: null }),
+    db
+      .from("historico_alteracoes")
+      .select("*")
+      .eq("tabela", "clientes")
+      .eq("chave", String(id))
+      .order("quando", { ascending: false }),
+    admin && outroId && outroId !== id
+      ? db.from("vw_clientes").select("*").eq("id", outroId).maybeSingle()
+      : Promise.resolve({ data: null }),
     admin ? nomesClientes(db) : Promise.resolve([]),
   ]);
   if (!cliente.data) notFound();
@@ -49,7 +68,11 @@ export default async function PaginaCliente(props: PageProps<"/clientes/[id]">) 
 
   return (
     <>
-      <CabecalhoPagina sobre={<Link href="/clientes">Clientes</Link>} titulo={c.nome} descricao={c.primeiro_ano ? `Cliente desde ${c.primeiro_ano}.` : undefined} />
+      <CabecalhoPagina
+        sobre={<Link href="/clientes">Clientes</Link>}
+        titulo={c.nome}
+        descricao={c.primeiro_ano ? `Cliente desde ${c.primeiro_ano}.` : undefined}
+      />
 
       <div className="pilha">
         {typeof q.unificado === "string" ? (
@@ -57,12 +80,18 @@ export default async function PaginaCliente(props: PageProps<"/clientes/[id]">) 
             “{q.unificado}” foi unificado neste cliente. A grafia antiga ficou registrada nos registros afetados e no histórico.
           </p>
         ) : null}
-        {q.erro === "unificar" ? <p className="aviso aviso-erro">A unificação não foi feita. Confira se os dois clientes ainda existem.</p> : null}
+        {q.erro === "unificar" ? (
+          <p className="aviso aviso-erro">A unificação não foi feita. Confira se os dois clientes ainda existem.</p>
+        ) : null}
         {q.erro === "confirmar" ? <p className="aviso aviso-erro">Marque a confirmação antes de unificar.</p> : null}
 
         <div className="indicadores">
           <Indicador rotulo="Propostas" valor={formatarInteiro(c.propostas)} />
-          <Indicador rotulo="Contratos" valor={formatarInteiro(c.contratos)} detalhe={c.pct_sucesso === null ? undefined : `${formatarPercentual(Number(c.pct_sucesso))} de sucesso`} />
+          <Indicador
+            rotulo="Contratos"
+            valor={formatarInteiro(c.contratos)}
+            detalhe={c.pct_sucesso === null ? undefined : `${formatarPercentual(Number(c.pct_sucesso))} de sucesso`}
+          />
           <Indicador
             rotulo="Contratado (P)"
             valor={formatarMoeda(Number(c.valor_contratado_p))}
@@ -132,12 +161,20 @@ export default async function PaginaCliente(props: PageProps<"/clientes/[id]">) 
                     <td data-label="Nº" className="c-topo num">
                       <Link href={`/registros/${r.num}`}>{r.num}</Link>
                     </td>
-                    <td data-label="Ano" className="tabular">{r.ano}</td>
+                    <td data-label="Ano" className="tabular">
+                      {r.ano}
+                    </td>
                     <td className="c-principal celula-escopo">{r.escopo ?? <em className="muted">sem escopo</em>}</td>
                     <td className="c-topo-dir">
                       <SeloSituacao situacao={r.situacao} />
                     </td>
-                    <td data-label="Valor" className="num">{r.valor === null ? (r.valor_texto ? `“${r.valor_texto}”` : "—") : formatarValorRegistro(Number(r.valor), r.tipo)}</td>
+                    <td data-label="Valor" className="num">
+                      {r.valor === null
+                        ? r.valor_texto
+                          ? `“${r.valor_texto}”`
+                          : "—"
+                        : formatarValorRegistro(Number(r.valor), r.tipo)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -165,11 +202,19 @@ export default async function PaginaCliente(props: PageProps<"/clientes/[id]">) 
                 <tbody>
                   {nfs.map((n) => (
                     <tr key={n.id} className={n.a_receber ? "linha-alerta" : undefined}>
-                      <td data-label="NF" className="c-topo tabular">{n.numero || "s/nº"}</td>
-                      <td data-label="Emissão" className="tabular">{formatarData(n.data_emissao)}</td>
-                      <td data-label="Crédito" className="tabular">{n.data_credito ? formatarData(n.data_credito) : <span className="selo selo-alerta">a receber</span>}</td>
+                      <td data-label="NF" className="c-topo tabular">
+                        {n.numero || "s/nº"}
+                      </td>
+                      <td data-label="Emissão" className="tabular">
+                        {formatarData(n.data_emissao)}
+                      </td>
+                      <td data-label="Crédito" className="tabular">
+                        {n.data_credito ? formatarData(n.data_credito) : <span className="selo selo-alerta">a receber</span>}
+                      </td>
                       <td className="c-principal celula-escopo">{n.titulo ?? "—"}</td>
-                      <td data-label="Valor" className="num">{formatarMoeda(Number(n.valor))}</td>
+                      <td data-label="Valor" className="num">
+                        {formatarMoeda(Number(n.valor))}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

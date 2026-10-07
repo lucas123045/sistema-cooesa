@@ -23,7 +23,10 @@ export async function marcarRevisada(form: FormData) {
   // ignoreDuplicates = ON CONFLICT DO NOTHING: um segundo clique não dá erro.
   const { error } = await db
     .from("pendencias_revisadas")
-    .upsert({ tipo: dados.data.tipo, chave: dados.data.chave, revisado_por: sessao.userId }, { onConflict: "tipo,chave", ignoreDuplicates: true });
+    .upsert(
+      { tipo: dados.data.tipo, chave: dados.data.chave, revisado_por: sessao.userId },
+      { onConflict: "tipo,chave", ignoreDuplicates: true },
+    );
   if (error) redirect("/pendencias?erro=salvar");
   revalidatePath("/", "layout");
 }

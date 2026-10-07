@@ -26,7 +26,13 @@ function itens(pendencias: number | null): Item[] {
     { href: "/curriculo", rotulo: "Currículo", icone: "curriculo" },
     { href: "/painel", rotulo: "Visão geral", icone: "painel", grupo: "analise" },
     { href: "/resultados", rotulo: "Resultados", icone: "resultados", grupo: "analise" },
-    { href: "/pendencias", rotulo: "Pendências de dados", icone: "pendencias", contador: pendencias ?? undefined, grupo: "analise" },
+    {
+      href: "/pendencias",
+      rotulo: "Pendências de dados",
+      icone: "pendencias",
+      contador: pendencias ?? undefined,
+      grupo: "analise",
+    },
     { href: "/configuracoes", rotulo: "Configurações", icone: "configuracoes", soAdmin: true, grupo: "analise" },
   ];
 }
@@ -96,8 +102,7 @@ export function Navegacao({ nome, papel, pendencias }: Props) {
   useEffect(() => {
     if (!aberto) return;
     const quemAbriu = document.activeElement as HTMLElement | null;
-    const focaveis = () =>
-      Array.from(gaveta.current?.querySelectorAll<HTMLElement>("a[href], button:not([disabled])") ?? []);
+    const focaveis = () => Array.from(gaveta.current?.querySelectorAll<HTMLElement>("a[href], button:not([disabled])") ?? []);
     focaveis()[0]?.focus();
     const teclado = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -141,7 +146,14 @@ export function Navegacao({ nome, papel, pendencias }: Props) {
 
       <header className="topo-movel">
         <div className="topo-movel-barra">
-          <button type="button" className="menu-botao" aria-expanded={aberto} aria-controls="menu-movel" aria-label="Abrir menu" onClick={() => setAberto(true)}>
+          <button
+            type="button"
+            className="menu-botao"
+            aria-expanded={aberto}
+            aria-controls="menu-movel"
+            aria-label="Abrir menu"
+            onClick={() => setAberto(true)}
+          >
             <Icone nome="menu" tamanho={22} />
           </button>
           <Link href="/" aria-label="Cooesa — Painel de Controle" className="topo-movel-logo">
@@ -155,7 +167,15 @@ export function Navegacao({ nome, papel, pendencias }: Props) {
 
       {aberto ? (
         <div className="gaveta-fundo" onClick={() => setAberto(false)}>
-          <div id="menu-movel" ref={gaveta} className="gaveta" role="dialog" aria-modal="true" aria-label="Menu" onClick={(e) => e.stopPropagation()}>
+          <div
+            id="menu-movel"
+            ref={gaveta}
+            className="gaveta"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="gaveta-topo">
               <Logo variante="branco" />
               <button type="button" className="menu-botao" aria-label="Fechar menu" onClick={() => setAberto(false)}>

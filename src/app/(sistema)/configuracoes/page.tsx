@@ -94,9 +94,9 @@ export default async function Configuracoes(props: { searchParams: Promise<{ err
         </div>
         <div className="painel-corpo">
           <p className="texto-2">
-            Além do backup automático semanal (GitHub Actions, guardado por 90 dias), baixe uma cópia antes de mudanças grandes.
-            O JSON é uma cópia completa legível por programas; o Excel, para consulta. Para restaurar o banco inteiro, use o dump
-            do backup automático (veja o README).
+            Além do backup automático semanal (GitHub Actions, guardado por 90 dias), baixe uma cópia antes de mudanças grandes. O
+            JSON é uma cópia completa legível por programas; o Excel, para consulta. Para restaurar o banco inteiro, use o dump do
+            backup automático (veja o README).
           </p>
           <p className="aviso aviso-alerta">
             O arquivo contém nomes e telefones de contatos (LGPD). Guarde em pasta restrita e não envie por e-mail.

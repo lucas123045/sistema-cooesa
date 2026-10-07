@@ -46,6 +46,9 @@ npm run dev                       # http://localhost:3000
 | `npm run build` / `npm start` | build e servidor de produção |
 | `npm run typecheck` · `npm run lint` | TypeScript e ESLint |
 | `npm test` | testes (banco em memória com PGlite, sem Docker) |
+| `npm run e2e` | testes de ponta a ponta no navegador, só leitura (ver seção 8) |
+| `npm run format` / `format:check` | formata / confere a formatação (Prettier) |
+| `npm run tipos` | gera `src/lib/database.types.ts` a partir do banco (precisa de `supabase link`) |
 | `npm run seed` | carga da planilha no Supabase + conferência |
 | `npm run conferir` | só a conferência, sem gravar nada |
 | `npm run criar-admin -- email "Nome"` | cria (ou promove) um administrador |
@@ -171,6 +174,17 @@ Os testes do banco sobem um PostgreSQL em memória ([PGlite](https://pglite.dev)
 (`tests/db/supabase-shim.sql`), aplicam todas as migrações e a carga real da planilha. Cobrem: todos os números da
 seção 4.6, idempotência da carga, RLS por papel (anônimo, sem perfil, leitura, editor, admin), histórico de alterações,
 unificação de clientes, e as regras de % de sucesso e soma P/T.
+
+**Ponta a ponta (navegador real).** `tests/e2e/` cobre login, senha errada, todas as áreas a partir do
+Painel de Controle, busca e detalhe, exportação CSV (sem contatos) e o menu do celular. São **só de leitura**.
+Crie uma conta de papel *leitura*, sem verificação em dois passos, só para os testes:
+
+```bash
+npm run build && npm start                         # em outro terminal
+E2E_EMAIL=teste@... E2E_SENHA=... npm run e2e      # E2E_CANAL=msedge usa o Edge do Windows
+```
+
+**Integração contínua.** `.github/workflows/ci.yml` roda formatação, lint, tipos, testes e build a cada push.
 
 ## 9. Estrutura do código
 
